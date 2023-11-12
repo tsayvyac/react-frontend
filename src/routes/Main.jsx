@@ -170,10 +170,10 @@ export default function DrawerAppBar() {
                 >
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        {content === "Dashboard" && <Dashboard />}
-                        {content === "Issues" && <Issues />}
-                        {content === "Services" && <Services />}
-                        {content === "Map" && <MapPage />}
+                        {content === "Dashboard" && <Dashboard sx={{defaultTheme}}/>}
+                        {content === "Issues" && <Issues sx={{defaultTheme}}/>}
+                        {content === "Services" && <Services sx={{defaultTheme}}/>}
+                        {content === "Map" && <MapPage sx={{defaultTheme}}/>}
                         <Copyright sx={{ pt: 4 }} />
                     </Container>
                 </Box>
