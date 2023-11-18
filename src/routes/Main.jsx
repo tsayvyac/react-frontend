@@ -30,7 +30,7 @@ const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})(({theme, open}) => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
@@ -46,8 +46,8 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
+const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})(
+    ({theme, open}) => ({
         '& .MuiDrawer-paper': {
             position: 'relative',
             whiteSpace: 'nowrap',
@@ -79,8 +79,8 @@ export default function DrawerAppBar() {
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
+            <Box sx={{display: 'flex'}}>
+                <CssBaseline/>
                 <AppBar position="absolute" open={open} sx={{background: '#FFF'}}>
                     <Toolbar
                         sx={{
@@ -94,17 +94,17 @@ export default function DrawerAppBar() {
                             onClick={toggleDrawer}
                             sx={{
                                 marginRight: '36px',
-                                ...(open && { display: 'none' }),
+                                ...(open && {display: 'none'}),
                             }}
                         >
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                         <Typography
                             component="h1"
                             variant="h6"
                             color="black"
                             noWrap
-                            sx={{ flexGrow: 1 }}
+                            sx={{flexGrow: 1}}
                         >
                             Analyst: Name
                         </Typography>
@@ -113,7 +113,7 @@ export default function DrawerAppBar() {
                             aria-label="quit"
                             href="/"
                         >
-                            <ExitToApp />
+                            <ExitToApp/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
@@ -127,35 +127,35 @@ export default function DrawerAppBar() {
                         }}
                     >
                         <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
+                            <ChevronLeftIcon/>
                         </IconButton>
                     </Toolbar>
-                    <Divider />
+                    <Divider/>
                     <List component="nav">
                         <React.Fragment>
                             <ListItemButton onClick={() => setContent("Dashboard")}>
                                 <ListItemIcon>
-                                    <DashboardIcon />
+                                    <DashboardIcon/>
                                 </ListItemIcon>
-                                <ListItemText primary="Dashboard" />
+                                <ListItemText primary="Dashboard"/>
                             </ListItemButton>
                             <ListItemButton onClick={() => setContent("Issues")}>
                                 <ListItemIcon>
-                                    <ErrorOutline />
+                                    <ErrorOutline/>
                                 </ListItemIcon>
-                                <ListItemText primary="Issues" />
+                                <ListItemText primary="Issues"/>
                             </ListItemButton>
                             <ListItemButton onClick={() => setContent("Services")}>
                                 <ListItemIcon>
-                                    <Construction />
+                                    <Construction/>
                                 </ListItemIcon>
-                                <ListItemText primary="Public services" />
+                                <ListItemText primary="Public services"/>
                             </ListItemButton>
                             <ListItemButton onClick={() => setContent("Map")}>
                                 <ListItemIcon>
-                                    <Map />
+                                    <Map/>
                                 </ListItemIcon>
-                                <ListItemText primary="Map" />
+                                <ListItemText primary="Map"/>
                             </ListItemButton>
                         </React.Fragment>
                     </List>
@@ -168,13 +168,13 @@ export default function DrawerAppBar() {
                         overflow: 'auto',
                     }}
                 >
-                    <Toolbar />
-                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        {content === "Dashboard" && <Dashboard sx={{defaultTheme}}/>}
+                    <Toolbar/>
+                    <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
+                        {content === "Dashboard" && <Dashboard defaultTheme={defaultTheme} setContent={setContent}/>}
                         {content === "Issues" && <Issues sx={{defaultTheme}}/>}
                         {content === "Services" && <Services sx={{defaultTheme}}/>}
                         {content === "Map" && <MapPage sx={{defaultTheme}}/>}
-                        <Copyright sx={{ pt: 4 }} />
+                        <Copyright sx={{pt: 4}}/>
                     </Container>
                 </Box>
             </Box>
