@@ -5,9 +5,9 @@ import {ThemeProvider} from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import Box from "@mui/material/Box";
-import {Tab, Table, TableBody, TableCell, TableHead, TableRow, Tabs} from "@mui/material";
+import {Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs} from "@mui/material";
 import PropTypes from "prop-types";
 import TextField from "@mui/material/TextField";
 
@@ -99,10 +99,28 @@ export default function Issues(defaultTheme) {
             display: 'inline-block',
         };
     }
+    const [page, setPage] = useState(0);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const [rowsPerPage, setRowsPerPage] = useState(2);
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const visibleRows = useMemo(() =>
+            dummyData.slice(
+                page * rowsPerPage,
+                page * rowsPerPage + rowsPerPage
+            ),
+        [page, rowsPerPage],
+    );
 
     const populateTable = (rows) => {
         return <>
-            {dummyData.map((row) => (
+            {visibleRows.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -188,6 +206,15 @@ export default function Issues(defaultTheme) {
                                 {populateTable(dummyData)}
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            count={dummyData.length}
+                            component="div"
+                            page={page}
+                            rowsPerPage={rowsPerPage}
+                            rowsPerPageOptions={[10, 20, 50]}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                     </Box>
                 </Grid>
             </Container>
