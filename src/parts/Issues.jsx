@@ -13,12 +13,26 @@ import TextField from "@mui/material/TextField";
 
 
 const dummyData = [
-    {title: 'Issue 1', category: 'Published', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
-    {title: 'Issue 2', category: 'Published', address: '123 Street', status: 'Reserved', date: '2023-01-01'},
-    {title: 'Issue 3', category: 'Published', address: '123 Street', status: 'Solving', date: '2023-01-01'},
+    {title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
+    {title: 'Issue 2', category: 'Resolved', address: '123 Street', status: 'Solving', date: '2023-01-01'},
+    {title: 'Issue 3', category: 'Solving', address: '123 Street', status: 'Solving', date: '2023-01-01'},
     {title: 'Issue 4', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01'},
-
-
+    {title: 'Issue 5', category: 'Reserved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
+    {title: 'Issue 6', category: 'Resolved', address: '789 Boulevard', status: 'Reserved', date: '2023-02-16'},
+    {title: 'Issue 7', category: 'Solving', address: '101 Main Street', status: 'Resolved', date: '2023-02-17'},
+    {title: 'Issue 8', category: 'Published', address: '222 Park Lane', status: 'Published', date: '2023-02-18'},
+    {title: 'Issue 9', category: 'Reserved', address: '333 Central Avenue', status: 'Solving', date: '2023-02-19'},
+    {title: 'Issue 10', category: 'Resolved', address: '444 Elm Street', status: 'Resolved', date: '2023-02-20'},
+    {title: 'Issue 11', category: 'Solving', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
+    {title: 'Issue 12', category: 'Published', address: '123 Street', status: 'Reserved', date: '2023-01-01'},
+    {title: 'Issue 13', category: 'Reserved', address: '123 Street', status: 'Solving', date: '2023-01-01'},
+    {title: 'Issue 14', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01'},
+    {title: 'Issue 15', category: 'Resolved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
+    {title: 'Issue 16', category: 'Solving', address: '789 Boulevard', status: 'Published', date: '2023-02-16'},
+    {title: 'Issue 17', category: 'Published', address: '101 Main Street', status: 'Reserved', date: '2023-02-17'},
+    {title: 'Issue 18', category: 'Solving', address: '222 Park Lane', status: 'Solving', date: '2023-02-18'},
+    {title: 'Issue 19', category: 'Resolved', address: '333 Central Avenue', status: 'Published', date: '2023-02-19'},
+    {title: 'Issue 20', category: 'Reserved', address: '444 Elm Street', status: 'Reserved', date: '2023-02-20'}
     // Add more dummy data
 ];
 
@@ -104,7 +118,7 @@ export default function Issues(defaultTheme) {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-    const [rowsPerPage, setRowsPerPage] = useState(2);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -123,6 +137,7 @@ export default function Issues(defaultTheme) {
             {visibleRows.map((row) => (
                 <TableRow
                     key={row.name}
+                    hover
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                     <TableCell component="th" scope="row">
@@ -195,11 +210,11 @@ export default function Issues(defaultTheme) {
                         <Table sx={{ minWidth: 650 }} aria-label="Data table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Title</TableCell>
-                                    <TableCell align="left">Category</TableCell>
-                                    <TableCell align="left">Address</TableCell>
-                                    <TableCell align="left">Status</TableCell>
-                                    <TableCell align="left">Date of creation</TableCell>
+                                    <TableCell><Typography fontWeight="bold">Title</Typography></TableCell>
+                                    <TableCell align="left"><Typography fontWeight="bold">Category</Typography></TableCell>
+                                    <TableCell align="left"><Typography fontWeight="bold">Address</Typography></TableCell>
+                                    <TableCell align="left"><Typography fontWeight="bold">Status</Typography></TableCell>
+                                    <TableCell align="left"><Typography fontWeight="bold">Date of creation</Typography></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
