@@ -83,6 +83,7 @@ const ServicesTable = () => {
     const cellAlign = 'left';
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
     const [checked, setChecked] = useState(new Array(rows.length).fill(false));
+    const [clicked, setClicked] = useState();
 
     const handleCheckbox = (position, e) => {
         if (checked.filter((i) => i).length >= 3 && e.target.checked) return;
@@ -126,6 +127,8 @@ const ServicesTable = () => {
                             {visibleRows.map((row, index) => {
                                 return (
                                     <TableRow
+                                        onClick={() => setClicked(row.name)}
+                                        key={row.name}
                                         hover
                                         sx={{cursor: 'pointer'}}
                                     >
