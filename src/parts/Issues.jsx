@@ -68,7 +68,7 @@ export default function Issues() {
         title: "",
         fromDate: "",
         toDate: "",
-        category: "All",
+        status: "All",
     });
 
     const handleFilterChange = (event) => {
@@ -95,8 +95,8 @@ export default function Issues() {
 const IssuesCategories = (props) => {
 
     const handleCategoryChange = (event, newValue) => {
-        const categories = ['All', 'Published', 'Reserved', 'Solving', 'Resolved'];
-        props.setFilter({...props.filter, category: categories[newValue]});
+        const statusTypes = ['All', 'Published', 'Reserved', 'Solving', 'Resolved'];
+        props.setFilter({...props.filter, status: statusTypes[newValue]});
         props.setValue(newValue);
     };
 
@@ -171,7 +171,7 @@ const filterData = (data, filter) => {
             return false;
         }
 
-        return !(filter.category !== 'All' && item.category !== filter.category);
+        return !(filter.status !== 'All' && item.status !== filter.status);
     });
 }
 
