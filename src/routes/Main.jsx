@@ -24,7 +24,19 @@ import Issues from "../parts/Issues";
 import Services from "../parts/Services";
 import MapPage from "../parts/MapPage";
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme(
+    {
+        palette: {
+            issuesCategories: {
+                resolved: "#4caf50",
+                solving: "#00bcd4",
+                reserved: '#ff6600',
+                published: "#fce571",
+                default: '#7bcf7d'
+            }
+        }
+    }
+);
 
 const drawerWidth = 240;
 
@@ -170,10 +182,10 @@ export default function DrawerAppBar() {
                 >
                     <Toolbar/>
                     <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-                        {content === "Dashboard" && <Dashboard defaultTheme={defaultTheme} setContent={setContent}/>}
-                        {content === "Issues" && <Issues sx={{defaultTheme}}/>}
-                        {content === "Services" && <Services sx={{defaultTheme}}/>}
-                        {content === "Map" && <MapPage sx={{defaultTheme}}/>}
+                        {content === "Dashboard" && <Dashboard setContent={setContent}/>}
+                        {content === "Issues" && <Issues />}
+                        {content === "Services" && <Services />}
+                        {content === "Map" && <MapPage/>}
                         <Copyright sx={{pt: 4}}/>
                     </Container>
                 </Box>

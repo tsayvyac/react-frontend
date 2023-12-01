@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
-import {ThemeProvider} from "@mui/material/styles";
+import {ThemeProvider, useTheme} from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -10,7 +10,7 @@ import {useCallback, useState} from "react";
 
 export default function Dashboard(props) {
     return (
-        <ThemeProvider theme={props.defaultTheme}>
+        <>
             <Typography
                 component="h1"
                 variant="h4"
@@ -23,7 +23,7 @@ export default function Dashboard(props) {
             <DashboardCards/>
             <Divider/>
             <PublicServicesCard count={33} setContent={props.setContent}/>
-        </ThemeProvider>
+        </>
     );
 }
 
@@ -122,25 +122,29 @@ const DashboardCard = ({bgColor, title, subtitle}) => (
     </Grid>
 )
 
-const DashboardCards = () => (
-    <Box sx={{
-        pt: 0,
-        pr: 2,
-        pb: 2,
-        pl: 0,
-        mb: 2,
-        flexWrap: 'wrap',
-        flexGrow: 1
-    }}>
-        <Grid container spacing={3}>
-            <DashboardCard bgColor="#fce571" title="654" subtitle="Published"/>
-            <DashboardCard bgColor="#4caf50" title="123" subtitle="Resolved"/>
-            <DashboardCard bgColor="#00bcd4" title="365" subtitle="Solving"/>
-            <DashboardCard bgColor="#4caf50" title="5d 1h" subtitle="AVG time to resolve"/>
-            <DashboardCard bgColor="#9575cd" title="5" subtitle="Published in the last week"/>
-        </Grid>
-    </Box>
-)
+const DashboardCards = () => {
+    const theme = useTheme();
+
+    return (
+        <Box sx={{
+            pt: 0,
+            pr: 2,
+            pb: 2,
+            pl: 0,
+            mb: 2,
+            flexWrap: 'wrap',
+            flexGrow: 1
+        }}>
+            <Grid container spacing={3}>
+                <DashboardCard bgColor={theme.palette.issuesCategories.published} title="654" subtitle="Published"/>
+                <DashboardCard bgColor={theme.palette.issuesCategories.resolved} title="123" subtitle="Resolved"/>
+                <DashboardCard bgColor={theme.palette.issuesCategories.solving} title="365" subtitle="Solving"/>
+                <DashboardCard bgColor="#4caf50" title="5d 1h" subtitle="AVG time to resolve"/>
+                <DashboardCard bgColor="#9575cd" title="5" subtitle="Published in the last week"/>
+            </Grid>
+        </Box>
+    )
+}
 
 const PublicServicesCard = ({count, setContent}) => (
     <Box sx={{

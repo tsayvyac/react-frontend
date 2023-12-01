@@ -10,24 +10,25 @@ import Box from "@mui/material/Box";
 import {Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs} from "@mui/material";
 import PropTypes from "prop-types";
 import TextField from "@mui/material/TextField";
+import {useTheme} from '@mui/material/styles';
 
 
 const dummyData = [
-    {title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
+    {title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01'},
     {title: 'Issue 2', category: 'Resolved', address: '123 Street', status: 'Solving', date: '2023-01-01'},
     {title: 'Issue 3', category: 'Solving', address: '123 Street', status: 'Solving', date: '2023-01-01'},
     {title: 'Issue 4', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01'},
-    {title: 'Issue 5', category: 'Reserved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
+    {title: 'Issue 5', category: 'Reserved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15'},
     {title: 'Issue 6', category: 'Resolved', address: '789 Boulevard', status: 'Reserved', date: '2023-02-16'},
     {title: 'Issue 7', category: 'Solving', address: '101 Main Street', status: 'Resolved', date: '2023-02-17'},
     {title: 'Issue 8', category: 'Published', address: '222 Park Lane', status: 'Published', date: '2023-02-18'},
     {title: 'Issue 9', category: 'Reserved', address: '333 Central Avenue', status: 'Solving', date: '2023-02-19'},
     {title: 'Issue 10', category: 'Resolved', address: '444 Elm Street', status: 'Resolved', date: '2023-02-20'},
-    {title: 'Issue 11', category: 'Solving', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
+    {title: 'Issue 11', category: 'Solving', address: '123 Street', status: 'Resolved', date: '2023-01-01'},
     {title: 'Issue 12', category: 'Published', address: '123 Street', status: 'Reserved', date: '2023-01-01'},
     {title: 'Issue 13', category: 'Reserved', address: '123 Street', status: 'Solving', date: '2023-01-01'},
     {title: 'Issue 14', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01'},
-    {title: 'Issue 15', category: 'Resolved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
+    {title: 'Issue 15', category: 'Resolved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15'},
     {title: 'Issue 16', category: 'Solving', address: '789 Boulevard', status: 'Published', date: '2023-02-16'},
     {title: 'Issue 17', category: 'Published', address: '101 Main Street', status: 'Reserved', date: '2023-02-17'},
     {title: 'Issue 18', category: 'Solving', address: '222 Park Lane', status: 'Solving', date: '2023-02-18'},
@@ -37,7 +38,7 @@ const dummyData = [
 ];
 
 function CustomTabPanel(props) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <div
@@ -48,7 +49,7 @@ function CustomTabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{p: 3}}>
                     <Typography>{children}</Typography>
                 </Box>
             )}
@@ -62,20 +63,11 @@ CustomTabPanel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
+export default function Issues() {
 
-export default function Issues(defaultTheme) {
+    const theme = useTheme();
+
     const [value, setValue] = React.useState(0);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-        // Запросить новые отфильтрованные данные ибо залупа полная я не ебу как написать функцию для фильтра без ебаного апи сука
-    };
 
     const [filter, setFilter] = useState({
             title: "",
@@ -85,24 +77,24 @@ export default function Issues(defaultTheme) {
         }
     );
 
-    const getStatusBarStyle = (status) =>{
+    const getStatusBarStyle = (status) => {
         let backgroundColor;
 
         switch (status) {
             case 'Resolved':
-                backgroundColor = '#7bcf7d'; // Цвет для Resolved
+                backgroundColor = theme.palette.issuesCategories.resolved;
                 break;
             case 'Solving':
-                backgroundColor = '#ffcc00'; // Цвет для Solving
+                backgroundColor = theme.palette.issuesCategories.solving;
                 break;
             case 'Reserved':
-                backgroundColor = '#ff6600'; // Цвет для Reserved
+                backgroundColor = theme.palette.issuesCategories.reserved;
                 break;
             case 'Published':
-                backgroundColor = '#3399ff'; // Цвет для Published
+                backgroundColor = theme.palette.issuesCategories.published;
                 break;
             default:
-                backgroundColor = '#7bcf7d'; // Цвет по умолчанию
+                backgroundColor = theme.palette.issuesCategories.default;
                 break;
         }
 
@@ -118,7 +110,22 @@ export default function Issues(defaultTheme) {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+
+    };
+
+    const handleFilterChange = (event) => {
+        setFilter({...filter, [event.target.name]: event.target.value})
+    };
+
+    const handleCategoryChange = (event, newValue) => {
+        setFilter({...filter, category: newValue});
+    };
+
     const [rowsPerPage, setRowsPerPage] = useState(10);
+
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -138,7 +145,7 @@ export default function Issues(defaultTheme) {
                 <TableRow
                     key={row.name}
                     hover
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
                 >
                     <TableCell component="th" scope="row">
                         {row.title}
@@ -147,7 +154,7 @@ export default function Issues(defaultTheme) {
                     <TableCell align="left">{row.address}</TableCell>
                     <TableCell align="left">
                         <div style={getStatusBarStyle(row.status)}>
-                        {row.status}
+                            {row.status}
                         </div>
                     </TableCell>
                     <TableCell align="left">{row.date}</TableCell>
@@ -156,16 +163,16 @@ export default function Issues(defaultTheme) {
     }
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Typography component="h1" variant="h4" sx={{ fontWeight: 'bold'}}>
+        <>
+            <Typography component="h1" variant="h4" sx={{fontWeight: 'bold'}}>
                 Issues
             </Typography>
-            <Divider />
-            <Container disableGutters sx={{ mt: 4, mb: 4 }}>
-                <Grid container spacing={3} sx={{flexDirection: 'column', marginLeft: '5px', }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider', flexDirection: 'column' }}>
+            <Divider/>
+            <Container disableGutters sx={{mt: 4, mb: 4}}>
+                <Grid container spacing={3} sx={{flexDirection: 'column', marginLeft: '5px',}}>
+                    <Box sx={{borderBottom: 1, borderColor: 'divider', flexDirection: 'column'}}>
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                            <Tab label="All" />
+                            <Tab label="All"/>
                             <Tab label="Published"/>
                             <Tab label="Reserved"/>
                             <Tab label="Solving"/>
@@ -174,46 +181,57 @@ export default function Issues(defaultTheme) {
                     </Box>
                     <Box
                         component="form"
-                        sx={{ display: 'flex',
+                        sx={{
+                            display: 'flex',
                             marginTop: '15px',
                             marginLeft: '5px',
                             flexDirection: 'row',
                             alignItems: 'center',
-                            '& .MuiTextField-root': { m: 1, width: '25ch' },
+                            '& .MuiTextField-root': {m: 1, width: '25ch'},
                         }}
                         noValidate
                         autoComplete="off"
                     >
                         <TextField
+                            name="title"
                             label="Search"
                             placeholder="Title of issue"
-                            InputLabelProps={{ shrink: true }}
+                            onChange={handleFilterChange}
+                            InputLabelProps={{shrink: true}}
                         />
                         <TextField
+                            name="dateFrom"
                             label="Date from"
                             // placeholder="dd/mm/yyyy"
                             type={"date"}
-                            InputLabelProps={{ shrink: true }}
+                            onChange={handleFilterChange}
+                            InputLabelProps={{shrink: true}}
                         />
                         <TextField
+                            name="dateTo"
                             label="Date to"
                             // placeholder="dd/mm/yyyy"
                             type={"date"}
-                            InputLabelProps={{ shrink: true }}
+                            onChange={handleFilterChange}
+                            InputLabelProps={{shrink: true}}
                         />
 
-                        <Button variant="contained" sx={{height:'80%', width:'90px', ml:'7px', pl:'9px', pr:'9px'}}>
+                        <Button variant="contained"
+                                sx={{height: '80%', width: '90px', ml: '7px', pl: '9px', pr: '9px'}}>
                             Filter
                         </Button>
                     </Box>
                     <Box>
-                        <Table sx={{ minWidth: 650 }} aria-label="Data table">
+                        <Table sx={{minWidth: 650}} aria-label="Data table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell><Typography fontWeight="bold">Title</Typography></TableCell>
-                                    <TableCell align="left"><Typography fontWeight="bold">Category</Typography></TableCell>
-                                    <TableCell align="left"><Typography fontWeight="bold">Address</Typography></TableCell>
-                                    <TableCell align="left"><Typography fontWeight="bold">Status</Typography></TableCell>
+                                    <TableCell align="left"><Typography
+                                        fontWeight="bold">Category</Typography></TableCell>
+                                    <TableCell align="left"><Typography
+                                        fontWeight="bold">Address</Typography></TableCell>
+                                    <TableCell align="left"><Typography
+                                        fontWeight="bold">Status</Typography></TableCell>
                                     <TableCell align="left"><Typography fontWeight="bold">Date of creation</Typography></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -233,6 +251,6 @@ export default function Issues(defaultTheme) {
                     </Box>
                 </Grid>
             </Container>
-        </ThemeProvider>
+        </>
     );
 }
