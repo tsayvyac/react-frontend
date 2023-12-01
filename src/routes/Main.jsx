@@ -26,7 +26,19 @@ import MapPage from "../parts/MapPage";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import ServiceInfo from "../parts/ServiceInfo";
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme(
+    {
+        palette: {
+            issuesCategories: {
+                resolved: "#4caf50",
+                solving: "#00bcd4",
+                reserved: '#ff6600',
+                published: "#fce571",
+                default: '#7bcf7d'
+            }
+        }
+    }
+);
 
 const drawerWidth = 240;
 
