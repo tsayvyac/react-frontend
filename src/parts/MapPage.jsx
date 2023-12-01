@@ -1,11 +1,9 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import {ThemeProvider, useTheme} from "@mui/material/styles";
 import Container from "@mui/material/Container";
 
-export default function Map(defaultTheme) {
-    const theme = useTheme();
+export default function Map() {
 
     return (
         <>

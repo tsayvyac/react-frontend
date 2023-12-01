@@ -1,10 +1,8 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import {ThemeProvider} from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import {useMemo, useState} from "react";
 import Box from "@mui/material/Box";
 import {Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs} from "@mui/material";
@@ -34,7 +32,6 @@ const dummyData = [
     {title: 'Issue 18', category: 'Solving', address: '222 Park Lane', status: 'Solving', date: '2023-02-18'},
     {title: 'Issue 19', category: 'Resolved', address: '333 Central Avenue', status: 'Published', date: '2023-02-19'},
     {title: 'Issue 20', category: 'Reserved', address: '444 Elm Street', status: 'Reserved', date: '2023-02-20'}
-    // Add more dummy data
 ];
 
 function CustomTabPanel(props) {
@@ -66,35 +63,160 @@ CustomTabPanel.propTypes = {
 export default function Issues() {
 
     const theme = useTheme();
-
-    const [value, setValue] = React.useState(0);
-
+    const [value, setValue] = useState(0);
     const [filter, setFilter] = useState({
-            title: "",
-            fromDate: "",
-            toDate: "",
-            category: "All",
-        }
+        title: "",
+        fromDate: "",
+        toDate: "",
+        category: "All",
+    });
+
+    const handleFilterChange = (event) => {
+        setFilter({...filter, [event.target.name]: event.target.value});
+    };
+
+    return (
+        <>
+            <Typography component="h1" variant="h4" sx={{fontWeight: 'bold'}}>
+                Issues
+            </Typography>
+            <Divider/>
+            <Container disableGutters sx={{mt: 4, mb: 4}}>
+                <Grid container spacing={3} sx={{flexDirection: 'column', marginLeft: '5px',}}>
+                    <IssuesCategories value={value} setFilter={setFilter} setValue={setValue} filter={filter}/>
+                    <IssuesFilter handleFilterChange={handleFilterChange}/>
+                    <IssuesTable filter={filter} issueStatusColors={theme.palette.issuesCategories} dummyData={dummyData}/>
+                </Grid>
+            </Container>
+        </>
     );
+}
+
+const IssuesCategories = (props) => {
+
+    const handleCategoryChange = (event, newValue) => {
+        const categories = ['All', 'Published', 'Reserved', 'Solving', 'Resolved'];
+        props.setFilter({...props.filter, category: categories[newValue]});
+        props.setValue(newValue);
+    };
+
+    return (
+        <Box sx={{borderBottom: 1, borderColor: 'divider', flexDirection: 'column'}}>
+            <Tabs value={props.value} onChange={handleCategoryChange} aria-label="basic tabs example">
+                <Tab label="All"/>
+                <Tab label="Published"/>
+                <Tab label="Reserved"/>
+                <Tab label="Solving"/>
+                <Tab label="Resolved"/>
+            </Tabs>
+        </Box>
+    )
+
+}
+const IssuesFilter = (props) => (
+    <Box
+        component="form"
+        sx={{
+            display: 'flex',
+            marginTop: '15px',
+            marginLeft: '5px',
+            flexDirection: 'row',
+            alignItems: 'center',
+            '& .MuiTextField-root': {m: 1, width: '25ch'},
+        }}
+        noValidate
+        autoComplete="off"
+    >
+        <TextField
+            name="title"
+            label="Search"
+            placeholder="Title of issue"
+            onChange={props.handleFilterChange}
+            InputLabelProps={{shrink: true}}
+        />
+        <TextField
+            name="dateFrom"
+            label="Date from"
+            // placeholder="dd/mm/yyyy"
+            type={"date"}
+            onChange={props.handleFilterChange}
+            InputLabelProps={{shrink: true}}
+        />
+        <TextField
+            name="dateTo"
+            label="Date to"
+            // placeholder="dd/mm/yyyy"
+            type={"date"}
+            onChange={props.handleFilterChange}
+            InputLabelProps={{shrink: true}}
+        />
+    </Box>
+)
+
+const filterData = (data, filter) => {
+    return data.filter((item) => {
+        if (filter.title && !item.title.toLowerCase().includes(filter.title.toLowerCase())) {
+            return false;
+        }
+
+        // Filter by date range
+        const itemDate = new Date(item.date);
+        const fromDate = filter.fromDate ? new Date(filter.fromDate) : null;
+        const toDate = filter.toDate ? new Date(filter.toDate) : null;
+
+        if (fromDate && itemDate < fromDate) {
+            return false;
+        }
+        if (toDate && itemDate > toDate) {
+            return false;
+        }
+
+        return !(filter.category !== 'All' && item.category !== filter.category);
+    });
+}
+
+const IssuesTable = (props) => {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    // If face performance issues we should move this function outside of this React component
+    // This way, the function won't be redefined on every render of the component, which can be beneficial for performance.
+
+
+    const visibleRows = useMemo(() => filterData(dummyData, props.filter)
+            .slice(
+                page * rowsPerPage,
+                page * rowsPerPage + rowsPerPage
+            ),
+        [page, rowsPerPage, props.filter]);
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
 
     const getStatusBarStyle = (status) => {
         let backgroundColor;
 
         switch (status) {
             case 'Resolved':
-                backgroundColor = theme.palette.issuesCategories.resolved;
+                backgroundColor = props.issueStatusColors.resolved;
                 break;
             case 'Solving':
-                backgroundColor = theme.palette.issuesCategories.solving;
+                backgroundColor = props.issueStatusColors.solving;
                 break;
             case 'Reserved':
-                backgroundColor = theme.palette.issuesCategories.reserved;
+                backgroundColor = props.issueStatusColors.reserved;
                 break;
             case 'Published':
-                backgroundColor = theme.palette.issuesCategories.published;
+                backgroundColor = props.issueStatusColors.published;
                 break;
             default:
-                backgroundColor = theme.palette.issuesCategories.default;
+                backgroundColor = props.issueStatusColors.default;
                 break;
         }
 
@@ -105,152 +227,59 @@ export default function Issues() {
             display: 'inline-block',
         };
     }
-    const [page, setPage] = useState(0);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-
-    };
-
-    const handleFilterChange = (event) => {
-        setFilter({...filter, [event.target.name]: event.target.value})
-    };
-
-    const handleCategoryChange = (event, newValue) => {
-        setFilter({...filter, category: newValue});
-    };
-
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const visibleRows = useMemo(() =>
-            dummyData.slice(
-                page * rowsPerPage,
-                page * rowsPerPage + rowsPerPage
-            ),
-        [page, rowsPerPage],
-    );
-
-    const populateTable = (rows) => {
-        return <>
-            {visibleRows.map((row) => (
-                <TableRow
-                    key={row.name}
-                    hover
-                    sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                >
-                    <TableCell component="th" scope="row">
-                        {row.title}
-                    </TableCell>
-                    <TableCell align="left">{row.category}</TableCell>
-                    <TableCell align="left">{row.address}</TableCell>
-                    <TableCell align="left">
-                        <div style={getStatusBarStyle(row.status)}>
-                            {row.status}
-                        </div>
-                    </TableCell>
-                    <TableCell align="left">{row.date}</TableCell>
-                </TableRow>))}
-        </>
-    }
-
-    return (
-        <>
-            <Typography component="h1" variant="h4" sx={{fontWeight: 'bold'}}>
-                Issues
-            </Typography>
-            <Divider/>
-            <Container disableGutters sx={{mt: 4, mb: 4}}>
-                <Grid container spacing={3} sx={{flexDirection: 'column', marginLeft: '5px',}}>
-                    <Box sx={{borderBottom: 1, borderColor: 'divider', flexDirection: 'column'}}>
-                        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                            <Tab label="All"/>
-                            <Tab label="Published"/>
-                            <Tab label="Reserved"/>
-                            <Tab label="Solving"/>
-                            <Tab label="Resolved"/>
-                        </Tabs>
-                    </Box>
-                    <Box
-                        component="form"
-                        sx={{
-                            display: 'flex',
-                            marginTop: '15px',
-                            marginLeft: '5px',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            '& .MuiTextField-root': {m: 1, width: '25ch'},
-                        }}
-                        noValidate
-                        autoComplete="off"
+    const populateTable = () => {
+        return (
+            <>
+                {visibleRows.map((row, index) => (
+                    <TableRow
+                        key={index} // Using index as a key
+                        hover
+                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
                     >
-                        <TextField
-                            name="title"
-                            label="Search"
-                            placeholder="Title of issue"
-                            onChange={handleFilterChange}
-                            InputLabelProps={{shrink: true}}
-                        />
-                        <TextField
-                            name="dateFrom"
-                            label="Date from"
-                            // placeholder="dd/mm/yyyy"
-                            type={"date"}
-                            onChange={handleFilterChange}
-                            InputLabelProps={{shrink: true}}
-                        />
-                        <TextField
-                            name="dateTo"
-                            label="Date to"
-                            // placeholder="dd/mm/yyyy"
-                            type={"date"}
-                            onChange={handleFilterChange}
-                            InputLabelProps={{shrink: true}}
-                        />
-
-                        <Button variant="contained"
-                                sx={{height: '80%', width: '90px', ml: '7px', pl: '9px', pr: '9px'}}>
-                            Filter
-                        </Button>
-                    </Box>
-                    <Box>
-                        <Table sx={{minWidth: 650}} aria-label="Data table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell><Typography fontWeight="bold">Title</Typography></TableCell>
-                                    <TableCell align="left"><Typography
-                                        fontWeight="bold">Category</Typography></TableCell>
-                                    <TableCell align="left"><Typography
-                                        fontWeight="bold">Address</Typography></TableCell>
-                                    <TableCell align="left"><Typography
-                                        fontWeight="bold">Status</Typography></TableCell>
-                                    <TableCell align="left"><Typography fontWeight="bold">Date of creation</Typography></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {populateTable(dummyData)}
-                            </TableBody>
-                        </Table>
-                        <TablePagination
-                            count={dummyData.length}
-                            component="div"
-                            page={page}
-                            rowsPerPage={rowsPerPage}
-                            rowsPerPageOptions={[10, 20, 50]}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </Box>
-                </Grid>
-            </Container>
-        </>
-    );
+                        <TableCell component="th" scope="row">
+                            {row?.title} {/* Safely accessing title */}
+                        </TableCell>
+                        <TableCell align="left">{row.category}</TableCell>
+                        <TableCell align="left">{row.address}</TableCell>
+                        <TableCell align="left">
+                            <div style={getStatusBarStyle(row.status)}>
+                                {row.status}
+                            </div>
+                        </TableCell>
+                        <TableCell align="left">{row.date}</TableCell>
+                    </TableRow>))}
+            </>
+        );
+    }
+    return (
+        <Box>
+            <Table sx={{minWidth: 650}} aria-label="Data table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell><Typography fontWeight="bold">Title</Typography></TableCell>
+                        <TableCell align="left"><Typography
+                            fontWeight="bold">Category</Typography></TableCell>
+                        <TableCell align="left"><Typography
+                            fontWeight="bold">Address</Typography></TableCell>
+                        <TableCell align="left"><Typography
+                            fontWeight="bold">Status</Typography></TableCell>
+                        <TableCell align="left"><Typography fontWeight="bold">Date of creation</Typography></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {populateTable()}
+                </TableBody>
+            </Table>
+            <TablePagination
+                count={props.dummyData.length}
+                component="div"
+                page={page}
+                rowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[10, 20, 50]}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+        </Box>
+    )
 }
