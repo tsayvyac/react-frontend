@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
-import {ThemeProvider, useTheme} from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
