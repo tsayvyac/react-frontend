@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
-import {ThemeProvider} from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -10,7 +9,7 @@ import {useCallback, useState} from "react";
 
 export default function Dashboard(props) {
     return (
-        <ThemeProvider theme={props.defaultTheme}>
+        <React.Fragment>
             <Typography
                 component="h1"
                 variant="h4"
@@ -23,7 +22,7 @@ export default function Dashboard(props) {
             <DashboardCards/>
             <Divider/>
             <PublicServicesCard count={33} setContent={props.setContent}/>
-        </ThemeProvider>
+        </React.Fragment>
     );
 }
 

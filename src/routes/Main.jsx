@@ -23,6 +23,8 @@ import Dashboard from "../parts/Dashboard";
 import Issues from "../parts/Issues";
 import Services from "../parts/Services";
 import MapPage from "../parts/MapPage";
+import {Route, Routes, useNavigate} from "react-router-dom";
+import ServiceInfo from "../parts/ServiceInfo";
 
 const defaultTheme = createTheme();
 
@@ -74,8 +76,8 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
 
 export default function DrawerAppBar() {
     const [open, setOpen] = useState(true);
-    const [content, setContent] = useState("Dashboard");
     const toggleDrawer = () => setOpen(!open);
+    const navigate = useNavigate();
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -133,25 +135,25 @@ export default function DrawerAppBar() {
                     <Divider/>
                     <List component="nav">
                         <React.Fragment>
-                            <ListItemButton onClick={() => setContent("Dashboard")}>
+                            <ListItemButton onClick={() => navigate('dashboard')}>
                                 <ListItemIcon>
                                     <DashboardIcon/>
                                 </ListItemIcon>
                                 <ListItemText primary="Dashboard"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => setContent("Issues")}>
+                            <ListItemButton onClick={() => navigate('issues')}>
                                 <ListItemIcon>
                                     <ErrorOutline/>
                                 </ListItemIcon>
                                 <ListItemText primary="Issues"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => setContent("Services")}>
+                            <ListItemButton onClick={() => navigate('services')}>
                                 <ListItemIcon>
                                     <Construction/>
                                 </ListItemIcon>
                                 <ListItemText primary="Public services"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => setContent("Map")}>
+                            <ListItemButton onClick={() => navigate('map')}>
                                 <ListItemIcon>
                                     <Map/>
                                 </ListItemIcon>
@@ -170,10 +172,13 @@ export default function DrawerAppBar() {
                 >
                     <Toolbar/>
                     <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-                        {content === "Dashboard" && <Dashboard defaultTheme={defaultTheme} setContent={setContent}/>}
-                        {content === "Issues" && <Issues sx={{defaultTheme}}/>}
-                        {content === "Services" && <Services sx={{defaultTheme}}/>}
-                        {content === "Map" && <MapPage sx={{defaultTheme}}/>}
+                        <Routes>
+                            <Route index path="dashboard" element={<Dashboard />}></Route>
+                            <Route path="issues" element={<Issues/>}></Route>
+                            <Route path="services" element={<Services />}></Route>
+                            <Route path="map" element={<MapPage />}></Route>
+                            <Route path="services/:serviceId" element={<ServiceInfo />}></Route>
+                        </Routes>
                         <Copyright sx={{pt: 4}}/>
                     </Container>
                 </Box>

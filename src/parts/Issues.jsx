@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
-import {ThemeProvider} from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -156,7 +155,7 @@ export default function Issues(defaultTheme) {
     }
 
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <React.Fragment>
             <Typography component="h1" variant="h4" sx={{ fontWeight: 'bold'}}>
                 Issues
             </Typography>
@@ -233,6 +232,6 @@ export default function Issues(defaultTheme) {
                     </Box>
                 </Grid>
             </Container>
-        </ThemeProvider>
+        </React.Fragment>
     );
 }
