@@ -14,8 +14,10 @@ import {
     TableRow
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
+import {styled} from "@mui/material/styles";
 
 const createServiceData = (serviceId, name, phone, location, rr) => {
     return {serviceId, name, phone, location, rr};
@@ -60,6 +62,10 @@ const rows = [
 ]
 
 export default function Services() {
+    useEffect(() => {
+        document.title = 'Public Services';
+    }, []);
+
     return (
         <React.Fragment>
             <Typography
@@ -83,7 +89,17 @@ const ServicesTable = () => {
     const cellAlign = 'left';
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
     const [checked, setChecked] = useState(new Array(rows.length).fill(false));
-    const navigate = useNavigate();
+
+    const StyledLink = styled(Link)`
+        text-decoration: none;
+        color: #3f51b5;
+        &:visited {
+          color: #3f51b5;
+        }
+        &:hover {
+          text-decoration: underline;
+        }
+    `;
 
     const handleCheckbox = (position, e) => {
         if (checked.filter((i) => i).length >= 3 && e.target.checked) return;
@@ -126,13 +142,12 @@ const ServicesTable = () => {
                         <TableBody>
                             {visibleRows.map((row, index) => {
                                 return (
-                                    <TableRow
-                                        key={row.serviceId}
-                                        hover
-                                        sx={{cursor: 'pointer'}}
-                                        // onClick={() => navigate(row.serviceId)}
-                                    >
-                                        <TableCell align={cellAlign}>{row.name}</TableCell>
+                                    <TableRow key={row.serviceId}>
+                                        <TableCell align={cellAlign}>
+                                            <StyledLink to={'../services/' + row.serviceId}>
+                                                {row.name}
+                                            </StyledLink>
+                                        </TableCell>
                                         <TableCell align={cellAlign}>{row.phone}</TableCell>
                                         <TableCell align={cellAlign}>{row.location}</TableCell>
                                         <TableCell align={cellAlign}>{row.rr}</TableCell>

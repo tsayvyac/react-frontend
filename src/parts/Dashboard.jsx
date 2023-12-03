@@ -5,10 +5,15 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import {Chip, Paper, Stack} from "@mui/material";
 import CancelIcon from '@mui/icons-material/Cancel';
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useTheme} from '@mui/material/styles';
+import {useNavigate} from "react-router-dom";
 
-export default function Dashboard(props) {
+export default function Dashboard() {
+    useEffect(() => {
+        document.title = 'Dashboard';
+    }, []);
+
     return (
         <>
             <Typography
@@ -22,7 +27,7 @@ export default function Dashboard(props) {
             <FilterBar/>
             <DashboardCards/>
             <Divider/>
-            <PublicServicesCard count={33} setContent={props.setContent}/>
+            <PublicServicesCard count={33} />
         </>
     );
 }
@@ -146,33 +151,37 @@ const DashboardCards = () => {
     )
 }
 
-const PublicServicesCard = ({count, setContent}) => (
-    <Box sx={{
-        pt: 4,
-        pr: 2,
-        pb: 2,
-        pl: 0,
-        mb: 2,
-        flexWrap: 'wrap'
-    }}>
-        <Paper
-            sx={{
-                padding: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100px',
-                width: '200px',
-                cursor: 'pointer'
-            }}
-            elevation={2}
-            onClick={() => setContent('Services')}
-        >
-            <Typography variant="h5" component="div" sx={{fontWeight: 'bold'}}>
-                {count}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-                Public Services
-            </Typography>
-        </Paper>
-    </Box>
-);
+const PublicServicesCard = ({count}) => {
+    const navigate = useNavigate();
+
+    return (
+        <Box sx={{
+            pt: 4,
+            pr: 2,
+            pb: 2,
+            pl: 0,
+            mb: 2,
+            flexWrap: 'wrap'
+        }}>
+            <Paper
+                sx={{
+                    padding: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100px',
+                    width: '200px',
+                    cursor: 'pointer'
+                }}
+                elevation={2}
+                onClick={() => navigate('../services')}
+            >
+                <Typography variant="h5" component="div" sx={{fontWeight: 'bold'}}>
+                    {count}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                    Public Services
+                </Typography>
+            </Paper>
+        </Box>
+    );
+};

@@ -3,7 +3,7 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Box from "@mui/material/Box";
 import {Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs} from "@mui/material";
 import PropTypes from "prop-types";
@@ -61,7 +61,9 @@ CustomTabPanel.propTypes = {
 };
 
 export default function Issues() {
-
+    useEffect(() => {
+        document.title = 'Issues';
+    }, []);
     const theme = useTheme();
     const [value, setValue] = useState(0);
     const [filter, setFilter] = useState({
