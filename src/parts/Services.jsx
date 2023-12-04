@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import {useEffect, useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
 import {Link} from "react-router-dom";
 import {styled} from "@mui/material/styles";
 
@@ -67,7 +66,7 @@ export default function Services() {
     }, []);
 
     return (
-        <React.Fragment>
+        <>
             <Typography
                 component="h1"
                 variant="h4"
@@ -79,7 +78,7 @@ export default function Services() {
             <Container disableGutters sx={{mt: 4, mb: 4}}>
                 <ServicesTable/>
             </Container>
-        </React.Fragment>
+        </>
     );
 }
 
@@ -134,7 +133,7 @@ const ServicesTable = () => {
     );
 
     return (
-        <React.Fragment>
+        <>
             <Card>
                 <TableContainer component={Paper}>
                     <Table>
@@ -197,7 +196,7 @@ const ServicesTable = () => {
                 <CompareIcon/>
                 Compare
             </Fab>
-        </React.Fragment>
+        </>
     );
 }
 
