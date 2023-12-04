@@ -3,13 +3,16 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import {ArrowBack, ExitToApp} from "@mui/icons-material";
-import {AppBar, Paper, Stack} from "@mui/material";
+import {ArrowBack, Build, ExitToApp} from "@mui/icons-material";
+import {AppBar, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableRow} from "@mui/material";
 import Box from "@mui/material/Box";
 import {useNavigate} from "react-router-dom";
 import Container from "@mui/material/Container";
 import Copyright from "../routes/copyright/Copyright";
 import Divider from "@mui/material/Divider";
+import Avatar from "@mui/material/Avatar";
+import {deepPurple} from "@mui/material/colors";
+import {useTheme} from "@mui/material/styles";
 
 export default function ComparePage() {
     useEffect(() => {
@@ -28,12 +31,12 @@ export default function ComparePage() {
                 }}
             >
                 <Toolbar/>
-                <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
+                <Container disableGutters maxWidth="lg" sx={{mt: 4, mb: 4}}>
                     <Stack
-                        spacing={2}
+                        spacing={5}
                         direction="row"
                         useFlexGap
-                        justifyContent="space-evenly"
+                        justifyContent="space-between"
                     >
                         <ComparingCards/>
                         <ComparingCards/>
@@ -90,26 +93,84 @@ const AppBarHeader = () => {
 }
 
 const ComparingCards = () => {
+    const theme = useTheme();
 
     return (
         <>
-            <Box>
-                <Typography
-                    component="h1"
-                    variant="h4"
-                    sx={{fontWeight: 'bold'}}
-                >
-                    Public service
-                </Typography>
-                <Divider
-                    sx={{
-                        mb: 4,
+            <Stack
+                sx={{ width: '100%' }}
+                direction="column"
+                spacing={2}
+            >
+                <Box>
+                    <Typography
+                        component="h1"
+                        variant="h4"
+                    >
+                        Public service
+                    </Typography>
+                    <Divider/>
+                </Box>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Total:</TableCell>
+                                <TableCell>13</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Solving:</TableCell>
+                                <TableCell>3</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Resolved:</TableCell>
+                                <TableCell>6</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>AVG:</TableCell>
+                                <TableCell>3d 6h</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Container component={Paper} sx={{ p: 2 }}>
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
                     }}
-                />
-                <Container component={Paper}>
-                    <h1>Hello</h1>
+                    >
+                        <Box>
+                            <Typography fontWeight="bold">
+                                Information
+                            </Typography>
+                            <Typography
+                                variant="subtitle2"
+                                color={theme.palette.text.secondary}
+                            >
+                                Praha 6, Czech Republic |
+                            </Typography>
+                            <Typography
+                                variant="subtitle2"
+                                color={theme.palette.text.secondary}
+                                sx={{
+                                    mb: 3,
+                                }}
+                            >
+                                +420951256846
+                            </Typography>
+                        </Box>
+                        <Avatar sx={{bgcolor: deepPurple[500]}}>
+                            <Build/>
+                        </Avatar>
+                    </Box>
+                    <Typography
+                        variant="subtitle2"
+                        color={theme.palette.text.secondary}
+                    >
+                        Rechair is a public service initiative dedicated to repairing and revitalizing public furniture and fixtures within our communities. This project aims to enhance the quality of public spaces by ensuring that benches, tables, bus stops, and other amenities remain in excellent condition. By doing so, Rechair contributes to a more inviting, comfortable, and functional environment for everyone.
+                    </Typography>
                 </Container>
-            </Box>
+            </Stack>
         </>
     );
 }
