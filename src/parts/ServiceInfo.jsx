@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -8,7 +8,7 @@ import {ArrowBack, Build, Place} from "@mui/icons-material";
 import Container from "@mui/material/Container";
 import {
     Card, Chip,
-    Fab, FormControl, InputLabel, MenuItem,
+    FormControl, MenuItem,
     Paper, Select, Stack,
     Table,
     TableBody,
@@ -18,7 +18,7 @@ import {
     TablePagination,
     TableRow
 } from "@mui/material";
-import {styled, useTheme} from "@mui/material/styles";
+import {useTheme} from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
 import {deepPurple} from "@mui/material/colors";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
@@ -69,13 +69,13 @@ export default function ServiceInfo() {
     });
 
     return (
-        <Container>
+        <>
             <Header/>
             <InformationPaper/>
             <Container disableGutters sx={{mt: 4, mb: 4}}>
                 <IssuesTable/>
             </Container>
-        </Container>
+        </>
     );
 }
 
@@ -87,6 +87,7 @@ const Header = () => {
         <>
             <Box sx={{
                 display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
             }}>
                 <Typography
@@ -94,11 +95,10 @@ const Header = () => {
                     variant="h4"
                     sx={{fontWeight: 'bold'}}
                 >
-                    Public Service: {serviceId}
+                    Public service: {serviceId}
                 </Typography>
                 <Button
                     startIcon={<ArrowBack />}
-                    size="medium"
                     variant="contained"
                     color="error"
                     onClick={() => navigate(-1)}
@@ -108,7 +108,6 @@ const Header = () => {
             </Box>
             <Divider
                 sx={{
-                    mt: 0.5,
                     mb: 4,
                 }}
             />
@@ -144,7 +143,7 @@ const InformationPaper = () => {
                                 mb: 3,
                             }}
                         >
-                            Praha 6, Czech Republic | +420 951 256 846
+                            Praha 6, Czech Republic | +420951256846
                         </Typography>
                     </Box>
                     <Avatar sx={{bgcolor: deepPurple[500]}}>
@@ -261,40 +260,49 @@ const IssuesToolbar = () => {
                 ml: 2,
                 mt: 2
             }}
-                direction="row"
+                   useFlexGap
+                   alignItems="center"
+                   justifyContent="space-between"
+                   direction="row"
             >
-                <Box sx={{
-                    width: 120,
-                    mr: 2,
-                }}>
-                    <FormControl fullWidth>
-                        <Select
-                            value={status}
-                            onChange={handleChange}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'Without label' }}
-                        >
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value={20}>Resolved</MenuItem>
-                            <MenuItem value={30}>Solving</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
-                <Box sx={{
-                    width: 170,
-                    mr: 2,
-                }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker label="From" />
-                    </LocalizationProvider>
-                </Box>
-                <Box sx={{
-                    width: 170,
-                    mr: 2,
-                }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker label="To" />
-                    </LocalizationProvider>
+                <Stack direction="row">
+                    <Box sx={{
+                        width: 120,
+                        mr: 2,
+                    }}>
+                        <FormControl fullWidth>
+                            <Select
+                                value={status}
+                                onChange={handleChange}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                                <MenuItem value="">All</MenuItem>
+                                <MenuItem value={20}>Resolved</MenuItem>
+                                <MenuItem value={30}>Solving</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box sx={{
+                        width: 170,
+                        mr: 2,
+                    }}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker label="From" />
+                        </LocalizationProvider>
+                    </Box>
+                    <Box sx={{
+                        width: 170,
+                        mr: 2,
+                    }}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker label="To" />
+                        </LocalizationProvider>
+                    </Box>
+                </Stack>
+                <Box>
+                    <Button variant="outlined" sx={{ mr: 2 }}>Filter</Button>
+                    <Button variant="contained" sx={{ mr: 2 }}>Export to PDF</Button>
                 </Box>
             </Stack>
             <Stack sx={{

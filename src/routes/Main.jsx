@@ -25,6 +25,7 @@ import Services from "../parts/Services";
 import MapPage from "../parts/MapPage";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import ServiceInfo from "../parts/ServiceInfo";
+import ComparePage from "../parts/ComparePage";
 
 const defaultTheme = createTheme(
     {

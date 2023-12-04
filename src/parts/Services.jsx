@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import {useEffect, useMemo, useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {styled} from "@mui/material/styles";
 
 const createServiceData = (serviceId, name, phone, location, rr) => {
@@ -88,6 +88,7 @@ const ServicesTable = () => {
     const cellAlign = 'left';
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
     const [checked, setChecked] = useState(new Array(rows.length).fill(false));
+    const navigate = useNavigate();
 
     const StyledLink = styled(Link)`
         text-decoration: none;
@@ -192,6 +193,7 @@ const ServicesTable = () => {
                      margin: 0,
                      right: 40,
                      bottom: 20}}
+                 onClick={() => navigate('../../compare')}
             >
                 <CompareIcon/>
                 Compare

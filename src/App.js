@@ -7,6 +7,7 @@ import Services from "./parts/Services";
 import MapPage from "./parts/MapPage";
 import NotMatch from "./parts/NotMatch";
 import ServiceInfo from "./parts/ServiceInfo";
+import ComparePage from "./parts/ComparePage";
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
                     <Route path="map" element={<MapPage />}></Route>
                     <Route path="services/:serviceId" element={<ServiceInfo />}></Route>
                 </Route>
+                <Route path="compare" element={<ComparePage />}></Route>
                 <Route path="*" element={<NotMatch />}></Route>
             </Routes>
         </BrowserRouter>
