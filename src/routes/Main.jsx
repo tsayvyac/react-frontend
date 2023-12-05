@@ -23,8 +23,10 @@ import Dashboard from "../parts/Dashboard";
 import Issues from "../parts/Issues";
 import Services from "../parts/Services";
 import MapPage from "../parts/MapPage";
-import {Route, Routes, useNavigate} from "react-router-dom";
-import ServiceInfo from "../parts/ServiceInfo";
+import { auth } from '../config/firebase';
+import { signOut } from 'firebase/auth';
+import {useNavigate} from "react-router-dom";
+
 
 const defaultTheme = createTheme(
     {
@@ -88,8 +90,20 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
 
 export default function DrawerAppBar() {
     const [open, setOpen] = useState(true);
+    const [content, setContent] = useState("Dashboard");
     const toggleDrawer = () => setOpen(!open);
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        signOut(auth)
+            .then(() => {
+                console.log(auth.currentUser)
+                navigate("/");
+            })
+            .catch((error) => {
+                console.log("Logout failed: ", error);
+        });
+    }
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -125,7 +139,7 @@ export default function DrawerAppBar() {
                         <IconButton
                             color="black"
                             aria-label="quit"
-                            href="/"
+                            onClick={handleLogout}
                         >
                             <ExitToApp/>
                         </IconButton>
@@ -147,25 +161,25 @@ export default function DrawerAppBar() {
                     <Divider/>
                     <List component="nav">
                         <React.Fragment>
-                            <ListItemButton onClick={() => navigate('dashboard')}>
+                            <ListItemButton onClick={() => setContent("Dashboard")}>
                                 <ListItemIcon>
                                     <DashboardIcon/>
                                 </ListItemIcon>
                                 <ListItemText primary="Dashboard"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => navigate('issues')}>
+                            <ListItemButton onClick={() => setContent("Issues")}>
                                 <ListItemIcon>
                                     <ErrorOutline/>
                                 </ListItemIcon>
                                 <ListItemText primary="Issues"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => navigate('services')}>
+                            <ListItemButton onClick={() => setContent("Services")}>
                                 <ListItemIcon>
                                     <Construction/>
                                 </ListItemIcon>
                                 <ListItemText primary="Public services"/>
                             </ListItemButton>
-                            <ListItemButton onClick={() => navigate('map')}>
+                            <ListItemButton onClick={() => setContent("Map")}>
                                 <ListItemIcon>
                                     <Map/>
                                 </ListItemIcon>
@@ -184,13 +198,10 @@ export default function DrawerAppBar() {
                 >
                     <Toolbar/>
                     <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-                        <Routes>
-                            <Route index path="dashboard" element={<Dashboard />}></Route>
-                            <Route path="issues" element={<Issues/>}></Route>
-                            <Route path="services" element={<Services />}></Route>
-                            <Route path="map" element={<MapPage />}></Route>
-                            <Route path="services/:serviceId" element={<ServiceInfo />}></Route>
-                        </Routes>
+                        {content === "Dashboard" && <Dashboard setContent={setContent}/>}
+                        {content === "Issues" && <Issues/>}
+                        {content === "Services" && <Services/>}
+                        {content === "Map" && <MapPage/>}
                         <Copyright sx={{pt: 4}}/>
                     </Container>
                 </Box>
