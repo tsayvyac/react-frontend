@@ -20,6 +20,7 @@ const App = () => {
                 <Route path="map" element={<MapPage />}></Route>
                 <Route path="services/:serviceId" element={<ServiceInfo />}></Route>
             </Route>
+            <Route path="compare" element={<ComparePage />}></Route>
             <Route path="*" element={<NotMatch />}></Route>
         </Routes>
     )
