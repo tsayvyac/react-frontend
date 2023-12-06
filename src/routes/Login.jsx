@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from './copyright/Copyright';
+import {useNavigate} from "react-router-dom";
 
 const defaultTheme = createTheme();
 
@@ -25,6 +26,7 @@ export default function Login() {
             password: data.get('password'),
         });
     };
+    const navigate = useNavigate();
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -76,7 +78,7 @@ export default function Login() {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            href="/main/dashboard"
+                            onClick={() => navigate('main/dashboard')}
                         >
                             Login
                         </Button>
