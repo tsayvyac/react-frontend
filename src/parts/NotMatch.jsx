@@ -1,8 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 
 export default function NotMatch() {
+    useEffect(() => {
+        document.title = 'Not Found';
+    }, []);
+
     return (
         <React.Fragment>
             <Grid

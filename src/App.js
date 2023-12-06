@@ -7,6 +7,7 @@ import Services from "./parts/Services";
 import MapPage from "./parts/MapPage";
 import NotMatch from "./parts/NotMatch";
 import ServiceInfo from "./parts/ServiceInfo";
+import ComparePage from "./parts/ComparePage";
 
 const App = () => {
     return (
