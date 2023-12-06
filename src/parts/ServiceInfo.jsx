@@ -7,9 +7,9 @@ import Box from "@mui/material/Box";
 import {ArrowBack, Build, Place} from "@mui/icons-material";
 import Container from "@mui/material/Container";
 import {
-    Card, Chip,
+    Card, Chip, Dialog, DialogActions, DialogTitle,
     FormControl, MenuItem,
-    Paper, Select, Stack,
+    Paper, Select, Slide, Stack,
     Table,
     TableBody,
     TableCell,
@@ -61,6 +61,13 @@ const issues = [
     createIssuesData('is-31248441-pr6', 'Dssvtyeg', 'Gvfbyetdz 93, Praha 3','Solving', '17.12.2023/1d 65h'),
     createIssuesData('is-07481851-pr5', 'Mgzssqchvur', 'Isbnnnx 71, Praha 7','Solving', '03.01.2023/2d 80h'),
 ];
+
+const filterData = (issues, filter) => {
+    return issues.filter((issue) => {
+        if (filter.status === "") return true;
+        return !(filter.status !== "All" && issue.status !== filter.status);
+    });
+}
 
 export default function ServiceInfo() {
     const {serviceId} = useParams();
@@ -161,11 +168,119 @@ const InformationPaper = () => {
     );
 }
 
+const IssuesTableHead = () => {
+
+    return (
+        <TableHead>
+            <TableRow>
+                <TableCell align="left"><Typography fontWeight="bold" >Issue ID</Typography></TableCell>
+                <TableCell align="left"><Typography fontWeight="bold" >Category</Typography></TableCell>
+                <TableCell align="left"><Typography fontWeight="bold" >Location</Typography></TableCell>
+                <TableCell align="left"><Typography fontWeight="bold" >Status</Typography></TableCell>
+                <TableCell align="right"><Typography fontWeight="bold" >Date/Resolution time</Typography></TableCell>
+            </TableRow>
+        </TableHead>
+    );
+}
+
+const IssuesToolbar = (props) => {
+    const [status, setStatus] = useState("");
+    const handleChange = (event) => {
+        setStatus(event.target.value);
+        props.setFilter({...props.filter, status: event.target.value});
+    };
+    const [openDialog, setOpenDialog] = useState(false);
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    return (
+        <>
+            <Stack sx={{
+                ml: 2,
+                mt: 2
+            }}
+                   useFlexGap
+                   alignItems="center"
+                   justifyContent="space-between"
+                   direction="row"
+            >
+                <Stack direction="row">
+                    <Box sx={{
+                        width: 120,
+                        mr: 2,
+                    }}>
+                        <FormControl fullWidth>
+                            <Select
+                                value={status}
+                                onChange={handleChange}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                                <MenuItem value="">All</MenuItem>
+                                <MenuItem value="Resolved">Resolved</MenuItem>
+                                <MenuItem value="Solving">Solving</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box sx={{
+                        width: 170,
+                        mr: 2,
+                    }}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker label="From" />
+                        </LocalizationProvider>
+                    </Box>
+                    <Box sx={{
+                        width: 170,
+                        mr: 2,
+                    }}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker label="To" />
+                        </LocalizationProvider>
+                    </Box>
+                </Stack>
+                <Box>
+                    {/*<Button variant="outlined" sx={{ mr: 2 }}>Filter</Button>*/}
+                    <Button
+                        variant="contained"
+                        sx={{ mr: 2 }}
+                        onClick={handleOpenDialog}
+                    >
+                        Export to PDF
+                    </Button>
+                </Box>
+            </Stack>
+            <Stack sx={{
+                mt: 2,
+                ml: 2,
+            }}
+                   direction="row"
+                   spacing={2}
+            >
+                <Chip label="Resolved: 23" size="small" sx={{ bgcolor: '#2E7D32', color: 'white' }}/>
+                <Chip label="Solving: 12" size="small" sx={{ bgcolor: '#84D6D6', color: 'white' }} />
+                <Chip label="Total: 35" size="small" sx={{ bgcolor: '#616161', color: 'white' }} />
+                <Chip label="AVG: 2d 14h" size="small" sx={{ bgcolor: '#564A0B', color: 'white' }} />
+            </Stack>
+            <ExportDialog openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
+        </>
+    );
+}
+
 const IssuesTable = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const cellAlign = 'left';
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - issues.length) : 0;
+    const [filter, setFilter] = useState({
+        status: 'All',
+        dateFrom: '',
+        dateTo: ''
+    });
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filterData(issues, filter).length) : 0;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -177,11 +292,11 @@ const IssuesTable = () => {
     };
 
     const visibleIssues = useMemo(() =>
-            issues.slice(
+            filterData(issues, filter).slice(
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage
             ),
-        [page, rowsPerPage],
+        [page, rowsPerPage, filter],
     );
 
     const colors = {
@@ -197,7 +312,7 @@ const IssuesTable = () => {
         <>
             <Card>
                 <TableContainer component={Paper}>
-                    <IssuesToolbar/>
+                    <IssuesToolbar setFilter={setFilter} filter={filter}/>
                     <Table>
                         <IssuesTableHead/>
                         <TableBody>
@@ -233,7 +348,7 @@ const IssuesTable = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
-                        count={issues.length}
+                        count={filterData(issues, filter).length}
                         component="div"
                         page={page}
                         rowsPerPage={rowsPerPage}
@@ -247,91 +362,26 @@ const IssuesTable = () => {
     );
 }
 
-const IssuesToolbar = () => {
-    const [status, setStatus] = React.useState('');
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
-    const handleChange = (event) => {
-        setStatus(event.target.value);
-    };
-
-    return (
-        <>
-            <Stack sx={{
-                ml: 2,
-                mt: 2
-            }}
-                   useFlexGap
-                   alignItems="center"
-                   justifyContent="space-between"
-                   direction="row"
-            >
-                <Stack direction="row">
-                    <Box sx={{
-                        width: 120,
-                        mr: 2,
-                    }}>
-                        <FormControl fullWidth>
-                            <Select
-                                value={status}
-                                onChange={handleChange}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                                <MenuItem value="">All</MenuItem>
-                                <MenuItem value={20}>Resolved</MenuItem>
-                                <MenuItem value={30}>Solving</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
-                    <Box sx={{
-                        width: 170,
-                        mr: 2,
-                    }}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker label="From" />
-                        </LocalizationProvider>
-                    </Box>
-                    <Box sx={{
-                        width: 170,
-                        mr: 2,
-                    }}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker label="To" />
-                        </LocalizationProvider>
-                    </Box>
-                </Stack>
-                <Box>
-                    <Button variant="outlined" sx={{ mr: 2 }}>Filter</Button>
-                    <Button variant="contained" sx={{ mr: 2 }}>Export to PDF</Button>
-                </Box>
-            </Stack>
-            <Stack sx={{
-                mt: 2,
-                ml: 2,
-            }}
-                   direction="row"
-                   spacing={2}
-            >
-                <Chip label="Resolved: 23" size="small" sx={{ bgcolor: '#2E7D32', color: 'white' }}/>
-                <Chip label="Solving: 12" size="small" sx={{ bgcolor: '#84D6D6', color: 'white' }} />
-                <Chip label="Total: 35" size="small" sx={{ bgcolor: '#616161', color: 'white' }} />
-                <Chip label="AVG: 2d 14h" size="small" sx={{ bgcolor: '#564A0B', color: 'white' }} />
-            </Stack>
-        </>
-    );
-}
-
-const IssuesTableHead = () => {
+const ExportDialog = (props) => {
 
     return (
-        <TableHead>
-            <TableRow>
-                <TableCell align="left"><Typography fontWeight="bold" >Issue ID</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Category</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Location</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Status</Typography></TableCell>
-                <TableCell align="right"><Typography fontWeight="bold" >Date/Resolution time</Typography></TableCell>
-            </TableRow>
-        </TableHead>
+        <Dialog
+            open={props.openDialog}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={props.handleCloseDialog}
+        >
+            <DialogTitle>
+                {"Do you want to export statistics to PDF with used filters?"}
+            </DialogTitle>
+            <DialogActions>
+                <Button onClick={props.handleCloseDialog}>Export</Button>
+                <Button color="error" onClick={props.handleCloseDialog}>Cancel</Button>
+            </DialogActions>
+        </Dialog>
     );
 }

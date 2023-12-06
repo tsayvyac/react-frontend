@@ -274,7 +274,7 @@ const IssuesTable = (props) => {
                 </TableBody>
             </Table>
             <TablePagination
-                count={props.dummyData.length}
+                count={filterData(dummyData, props.filter).length}
                 component="div"
                 page={page}
                 rowsPerPage={rowsPerPage}
