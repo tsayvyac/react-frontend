@@ -1,17 +1,17 @@
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import { Chip, Paper, Stack } from '@mui/material'
-import CancelIcon from '@mui/icons-material/Cancel'
-import { useCallback, useEffect, useState } from 'react'
-import { useTheme } from '@mui/material/styles'
-import { useNavigate } from 'react-router-dom'
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { Chip, Paper, Stack } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { useCallback, useEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
     useEffect(() => {
-        document.title = 'Dashboard'
-    }, [])
+        document.title = 'Dashboard';
+    }, []);
 
     return (
         <>
@@ -24,7 +24,7 @@ export default function Dashboard() {
             <Divider />
             <PublicServicesCard count={33} />
         </>
-    )
+    );
 }
 
 const categories = [
@@ -37,27 +37,27 @@ const categories = [
     'Ecological',
     'Housing',
     'Public places'
-]
+];
 
 const FilterBar = () => {
-    const [selectedCategories, setSelectedCategories] = useState([])
+    const [selectedCategories, setSelectedCategories] = useState([]);
 
     const handleSelectCategory = useCallback((category) => {
         setSelectedCategories((prevCategories) =>
             prevCategories.includes(category) ? prevCategories.filter((c) => c !== category) : [...prevCategories, category]
-        )
-    }, [])
+        );
+    }, []);
 
     const handleDeselectCategory = useCallback((category) => {
-        setSelectedCategories((prevCategories) => prevCategories.filter((c) => c !== category))
-    }, [])
+        setSelectedCategories((prevCategories) => prevCategories.filter((c) => c !== category));
+    }, []);
 
     const isSelected = useCallback(
         (category) => {
-            return selectedCategories.includes(category)
+            return selectedCategories.includes(category);
         },
         [selectedCategories]
-    )
+    );
 
     return (
         <Stack
@@ -89,11 +89,11 @@ const FilterBar = () => {
                 />
             ))}
         </Stack>
-    )
-}
+    );
+};
 
 const Category = ({ category, handleSelectCategory, handleDeselectCategory, isSelected }) => {
-    const selected = isSelected(category)
+    const selected = isSelected(category);
 
     return (
         <Chip
@@ -104,8 +104,8 @@ const Category = ({ category, handleSelectCategory, handleDeselectCategory, isSe
             color={selected ? 'primary' : 'default'}
             variant='outlined'
         />
-    )
-}
+    );
+};
 
 const DashboardCard = ({ bgColor, title, subtitle }) => (
     <Grid item xs={12} sm={6} md={3}>
@@ -128,10 +128,10 @@ const DashboardCard = ({ bgColor, title, subtitle }) => (
             </Typography>
         </Paper>
     </Grid>
-)
+);
 
 const DashboardCards = () => {
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <Box
@@ -153,11 +153,11 @@ const DashboardCards = () => {
                 <DashboardCard bgColor='#9575cd' title='5' subtitle='Published in the last week' />
             </Grid>
         </Box>
-    )
-}
+    );
+};
 
 const PublicServicesCard = ({ count }) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     return (
         <Box
@@ -190,5 +190,5 @@ const PublicServicesCard = ({ count }) => {
                 </Typography>
             </Paper>
         </Box>
-    )
-}
+    );
+};

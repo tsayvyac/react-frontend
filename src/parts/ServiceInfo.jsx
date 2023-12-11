@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Box from '@mui/material/Box'
-import { ArrowBack, Build, Place } from '@mui/icons-material'
-import Container from '@mui/material/Container'
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import { ArrowBack, Build, Place } from '@mui/icons-material';
+import Container from '@mui/material/Container';
 import {
     Card,
     Chip,
@@ -25,16 +25,16 @@ import {
     TableHead,
     TablePagination,
     TableRow
-} from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-import Avatar from '@mui/material/Avatar'
-import { deepPurple } from '@mui/material/colors'
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
+import { deepPurple } from '@mui/material/colors';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const createIssuesData = (issueId, category, location, status, dateResTime) => {
-    return { issueId, category, location, status, dateResTime }
-}
+    return { issueId, category, location, status, dateResTime };
+};
 
 const issues = [
     createIssuesData('is-00201241-pr6', 'Chair Fix', 'Cukrovarnická 27, Praha 6', 'Resolved', '22.05.2023/1d 22h'),
@@ -68,20 +68,20 @@ const issues = [
     createIssuesData('is-06447676-pr5', 'Ppzzafoksja', 'Vwzpbdl 17, Praha 6', 'Resolved', '04.12.2023/3d 90h'),
     createIssuesData('is-31248441-pr6', 'Dssvtyeg', 'Gvfbyetdz 93, Praha 3', 'Solving', '17.12.2023/1d 65h'),
     createIssuesData('is-07481851-pr5', 'Mgzssqchvur', 'Isbnnnx 71, Praha 7', 'Solving', '03.01.2023/2d 80h')
-]
+];
 
 const filterData = (issues, filter) => {
     return issues.filter((issue) => {
-        if (filter.status === '') return true
-        return !(filter.status !== 'All' && issue.status !== filter.status)
-    })
-}
+        if (filter.status === '') return true;
+        return !(filter.status !== 'All' && issue.status !== filter.status);
+    });
+};
 
 export default function ServiceInfo() {
-    const { serviceId } = useParams()
+    const { serviceId } = useParams();
     useEffect(() => {
-        document.title = 'Service ' + serviceId
-    })
+        document.title = 'Service ' + serviceId;
+    });
 
     return (
         <>
@@ -91,12 +91,12 @@ export default function ServiceInfo() {
                 <IssuesTable />
             </Container>
         </>
-    )
+    );
 }
 
 const Header = () => {
-    const { serviceId } = useParams()
-    const navigate = useNavigate()
+    const { serviceId } = useParams();
+    const navigate = useNavigate();
 
     return (
         <>
@@ -120,11 +120,11 @@ const Header = () => {
                 }}
             />
         </>
-    )
-}
+    );
+};
 
 const InformationPaper = () => {
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <>
@@ -165,8 +165,8 @@ const InformationPaper = () => {
                 </Typography>
             </Container>
         </>
-    )
-}
+    );
+};
 
 const IssuesTableHead = () => {
     return (
@@ -189,22 +189,22 @@ const IssuesTableHead = () => {
                 </TableCell>
             </TableRow>
         </TableHead>
-    )
-}
+    );
+};
 
 const IssuesToolbar = (props) => {
-    const [status, setStatus] = useState('')
+    const [status, setStatus] = useState('');
     const handleChange = (event) => {
-        setStatus(event.target.value)
-        props.setFilter({ ...props.filter, status: event.target.value })
-    }
-    const [openDialog, setOpenDialog] = useState(false)
+        setStatus(event.target.value);
+        props.setFilter({ ...props.filter, status: event.target.value });
+    };
+    const [openDialog, setOpenDialog] = useState(false);
     const handleOpenDialog = () => {
-        setOpenDialog(true)
-    }
+        setOpenDialog(true);
+    };
     const handleCloseDialog = () => {
-        setOpenDialog(false)
-    }
+        setOpenDialog(false);
+    };
 
     return (
         <>
@@ -276,42 +276,42 @@ const IssuesToolbar = (props) => {
             </Stack>
             <ExportDialog openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
         </>
-    )
-}
+    );
+};
 
 const IssuesTable = () => {
-    const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
-    const cellAlign = 'left'
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const cellAlign = 'left';
     const [filter, setFilter] = useState({
         status: 'All',
         dateFrom: '',
         dateTo: ''
-    })
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filterData(issues, filter).length) : 0
+    });
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filterData(issues, filter).length) : 0;
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage)
-    }
+        setPage(newPage);
+    };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10))
-        setPage(0)
-    }
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const visibleIssues = useMemo(
         () => filterData(issues, filter).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
         [page, rowsPerPage, filter]
-    )
+    );
 
     const colors = {
         Resolved: 'success',
         Solving: 'secondary'
-    }
+    };
 
     const chipColor = (status) => {
-        return colors[status]
-    }
+        return colors[status];
+    };
 
     return (
         <>
@@ -341,7 +341,7 @@ const IssuesTable = () => {
                                         </TableCell>
                                         <TableCell align='right'>{row.dateResTime}</TableCell>
                                     </TableRow>
-                                )
+                                );
                             })}
                             {emptyRows > 0 && (
                                 <TableRow
@@ -366,12 +366,12 @@ const IssuesTable = () => {
                 </TableContainer>
             </Card>
         </>
-    )
-}
+    );
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction='up' ref={ref} {...props} />
-})
+    return <Slide direction='up' ref={ref} {...props} />;
+});
 
 const ExportDialog = (props) => {
     return (
@@ -384,5 +384,5 @@ const ExportDialog = (props) => {
                 </Button>
             </DialogActions>
         </Dialog>
-    )
-}
+    );
+};

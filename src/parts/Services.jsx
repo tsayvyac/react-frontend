@@ -1,16 +1,16 @@
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
-import CompareIcon from '@mui/icons-material/Compare'
-import { Card, Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material'
-import Checkbox from '@mui/material/Checkbox'
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { styled } from '@mui/material/styles'
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import CompareIcon from '@mui/icons-material/Compare';
+import { Card, Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 
 const createServiceData = (serviceId, name, phone, location, rr) => {
-    return { serviceId, name, phone, location, rr }
-}
+    return { serviceId, name, phone, location, rr };
+};
 
 const rows = [
     createServiceData(1, 'Branchack', '+420665854741', 'Praha 6', '10/3'),
@@ -48,12 +48,12 @@ const rows = [
     createServiceData(33, 'Vpikcp', '+420550790451', 'Praha 9', '5/13'),
     createServiceData(34, 'Eprolvhtf', '+420112279652', 'Praha 6', '7/11'),
     createServiceData(35, 'Aztok', '+420327751249', 'Praha 1', '18/18')
-]
+];
 
 export default function Services() {
     useEffect(() => {
-        document.title = 'Public Services'
-    }, [])
+        document.title = 'Public Services';
+    }, []);
 
     return (
         <>
@@ -65,16 +65,16 @@ export default function Services() {
                 <ServicesTable />
             </Container>
         </>
-    )
+    );
 }
 
 const ServicesTable = () => {
-    const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
-    const cellAlign = 'left'
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
-    const [checked, setChecked] = useState(new Array(rows.length).fill(false))
-    const navigate = useNavigate()
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const cellAlign = 'left';
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const [checked, setChecked] = useState(new Array(rows.length).fill(false));
+    const navigate = useNavigate();
 
     const StyledLink = styled(Link)`
         text-decoration: none;
@@ -85,32 +85,32 @@ const ServicesTable = () => {
         &:hover {
             text-decoration: underline;
         }
-    `
+    `;
 
     const handleCheckbox = (position, e) => {
-        if (checked.filter((i) => i).length >= 3 && e.target.checked) return
-        const updated = checked.map((item, index) => (index === position ? !item : item))
-        setChecked(updated)
-    }
+        if (checked.filter((i) => i).length >= 3 && e.target.checked) return;
+        const updated = checked.map((item, index) => (index === position ? !item : item));
+        setChecked(updated);
+    };
 
     const handleDisabled = (index) => {
-        return checked.filter((p) => p === true).length >= 3 && !checked[index]
-    }
+        return checked.filter((p) => p === true).length >= 3 && !checked[index];
+    };
 
     const handleFab = () => {
-        return checked.filter((i) => i).length < 2
-    }
+        return checked.filter((i) => i).length < 2;
+    };
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage)
-    }
+        setPage(newPage);
+    };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10))
-        setPage(0)
-    }
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
-    const visibleRows = useMemo(() => rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [page, rowsPerPage])
+    const visibleRows = useMemo(() => rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [page, rowsPerPage]);
 
     return (
         <>
@@ -136,7 +136,7 @@ const ServicesTable = () => {
                                             />
                                         </TableCell>
                                     </TableRow>
-                                )
+                                );
                             })}
                             {emptyRows > 0 && (
                                 <TableRow
@@ -178,8 +178,8 @@ const ServicesTable = () => {
                 Compare
             </Fab>
         </>
-    )
-}
+    );
+};
 
 const ServicesTableHead = () => {
     return (
@@ -202,5 +202,5 @@ const ServicesTableHead = () => {
                 </TableCell>
             </TableRow>
         </TableHead>
-    )
-}
+    );
+};

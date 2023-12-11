@@ -1,6 +1,6 @@
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
 export default function Map() {
     return (
@@ -13,5 +13,5 @@ export default function Map() {
                 Content Not Found
             </Container>
         </>
-    )
+    );
 }
