@@ -1,13 +1,13 @@
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import { useEffect, useMemo, useState } from 'react'
-import Box from '@mui/material/Box'
-import { Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs } from '@mui/material'
-import PropTypes from 'prop-types'
-import TextField from '@mui/material/TextField'
-import { useTheme } from '@mui/material/styles'
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import { useEffect, useMemo, useState } from 'react';
+import Box from '@mui/material/Box';
+import { Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs } from '@mui/material';
+import PropTypes from 'prop-types';
+import TextField from '@mui/material/TextField';
+import { useTheme } from '@mui/material/styles';
 
 const dummyData = [
     { title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
@@ -30,10 +30,10 @@ const dummyData = [
     { title: 'Issue 18', category: 'Solving', address: '222 Park Lane', status: 'Solving', date: '2023-02-18' },
     { title: 'Issue 19', category: 'Resolved', address: '333 Central Avenue', status: 'Published', date: '2023-02-19' },
     { title: 'Issue 20', category: 'Reserved', address: '444 Elm Street', status: 'Reserved', date: '2023-02-20' }
-]
+];
 
 function CustomTabPanel(props) {
-    const { children, value, index, ...other } = props
+    const { children, value, index, ...other } = props;
 
     return (
         <div role='tabpanel' hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
@@ -43,31 +43,31 @@ function CustomTabPanel(props) {
                 </Box>
             )}
         </div>
-    )
+    );
 }
 
 CustomTabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.number.isRequired,
     value: PropTypes.number.isRequired
-}
+};
 
 export default function Issues() {
     useEffect(() => {
-        document.title = 'Issues'
-    }, [])
-    const theme = useTheme()
-    const [value, setValue] = useState(0)
+        document.title = 'Issues';
+    }, []);
+    const theme = useTheme();
+    const [value, setValue] = useState(0);
     const [filter, setFilter] = useState({
         title: '',
         fromDate: '',
         toDate: '',
         status: 'All'
-    })
+    });
 
     const handleFilterChange = (event) => {
-        setFilter({ ...filter, [event.target.name]: event.target.value })
-    }
+        setFilter({ ...filter, [event.target.name]: event.target.value });
+    };
 
     return (
         <>
@@ -83,15 +83,15 @@ export default function Issues() {
                 </Grid>
             </Container>
         </>
-    )
+    );
 }
 
 const IssuesCategories = (props) => {
     const handleCategoryChange = (event, newValue) => {
-        const statusTypes = ['All', 'Published', 'Reserved', 'Solving', 'Resolved']
-        props.setFilter({ ...props.filter, status: statusTypes[newValue] })
-        props.setValue(newValue)
-    }
+        const statusTypes = ['All', 'Published', 'Reserved', 'Solving', 'Resolved'];
+        props.setFilter({ ...props.filter, status: statusTypes[newValue] });
+        props.setValue(newValue);
+    };
 
     return (
         <Box sx={{ borderBottom: 1, borderColor: 'divider', flexDirection: 'column' }}>
@@ -103,8 +103,8 @@ const IssuesCategories = (props) => {
                 <Tab label='Resolved' />
             </Tabs>
         </Box>
-    )
-}
+    );
+};
 const IssuesFilter = (props) => (
     <Box
         component='form'
@@ -143,33 +143,33 @@ const IssuesFilter = (props) => (
             InputLabelProps={{ shrink: true }}
         />
     </Box>
-)
+);
 
 const filterData = (data, filter) => {
     return data.filter((item) => {
         if (filter.title && !item.title.toLowerCase().includes(filter.title.toLowerCase())) {
-            return false
+            return false;
         }
 
         // Filter by date range
-        const itemDate = new Date(item.date)
-        const fromDate = filter.fromDate ? new Date(filter.fromDate) : null
-        const toDate = filter.toDate ? new Date(filter.toDate) : null
+        const itemDate = new Date(item.date);
+        const fromDate = filter.fromDate ? new Date(filter.fromDate) : null;
+        const toDate = filter.toDate ? new Date(filter.toDate) : null;
 
         if (fromDate && itemDate < fromDate) {
-            return false
+            return false;
         }
         if (toDate && itemDate > toDate) {
-            return false
+            return false;
         }
 
-        return !(filter.status !== 'All' && item.status !== filter.status)
-    })
-}
+        return !(filter.status !== 'All' && item.status !== filter.status);
+    });
+};
 
 const IssuesTable = (props) => {
-    const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     // If face performance issues we should move this function outside of this React component
     // This way, the function won't be redefined on every render of the component, which can be beneficial for performance.
@@ -177,36 +177,36 @@ const IssuesTable = (props) => {
     const visibleRows = useMemo(
         () => filterData(dummyData, props.filter).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
         [page, rowsPerPage, props.filter]
-    )
+    );
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10))
-        setPage(0)
-    }
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage)
-    }
+        setPage(newPage);
+    };
 
     const getStatusBarStyle = (status) => {
-        let backgroundColor
+        let backgroundColor;
 
         switch (status) {
             case 'Resolved':
-                backgroundColor = props.issueStatusColors.resolved
-                break
+                backgroundColor = props.issueStatusColors.resolved;
+                break;
             case 'Solving':
-                backgroundColor = props.issueStatusColors.solving
-                break
+                backgroundColor = props.issueStatusColors.solving;
+                break;
             case 'Reserved':
-                backgroundColor = props.issueStatusColors.reserved
-                break
+                backgroundColor = props.issueStatusColors.reserved;
+                break;
             case 'Published':
-                backgroundColor = props.issueStatusColors.published
-                break
+                backgroundColor = props.issueStatusColors.published;
+                break;
             default:
-                backgroundColor = props.issueStatusColors.default
-                break
+                backgroundColor = props.issueStatusColors.default;
+                break;
         }
 
         return {
@@ -214,8 +214,8 @@ const IssuesTable = (props) => {
             backgroundColor: backgroundColor,
             padding: '5px 20px',
             display: 'inline-block'
-        }
-    }
+        };
+    };
 
     const populateTable = () => {
         return (
@@ -238,8 +238,8 @@ const IssuesTable = (props) => {
                     </TableRow>
                 ))}
             </>
-        )
-    }
+        );
+    };
     return (
         <Box>
             <Table sx={{ minWidth: 650 }} aria-label='Data table'>
@@ -274,5 +274,5 @@ const IssuesTable = (props) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </Box>
-    )
-}
+    );
+};

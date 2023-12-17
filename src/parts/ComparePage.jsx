@@ -1,23 +1,23 @@
-import { useEffect } from 'react'
-import CssBaseline from '@mui/material/CssBaseline'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import { ArrowBack, Build, ExitToApp } from '@mui/icons-material'
-import { AppBar, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material'
-import Box from '@mui/material/Box'
-import { useNavigate } from 'react-router-dom'
-import Container from '@mui/material/Container'
-import Copyright from '../routes/copyright/Copyright'
-import Divider from '@mui/material/Divider'
-import Avatar from '@mui/material/Avatar'
-import { deepPurple } from '@mui/material/colors'
-import { useTheme } from '@mui/material/styles'
+import { useEffect } from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { ArrowBack, Build, ExitToApp } from '@mui/icons-material';
+import { AppBar, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
+import Container from '@mui/material/Container';
+import Copyright from '../routes/copyright/Copyright';
+import Divider from '@mui/material/Divider';
+import Avatar from '@mui/material/Avatar';
+import { deepPurple } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 
 export default function ComparePage() {
     useEffect(() => {
-        document.title = 'Compare'
-    }, [])
+        document.title = 'Compare';
+    }, []);
 
     return (
         <>
@@ -41,11 +41,11 @@ export default function ComparePage() {
                 </Container>
             </Box>
         </>
-    )
+    );
 }
 
 const AppBarHeader = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -68,11 +68,11 @@ const AppBarHeader = () => {
                 </Toolbar>
             </AppBar>
         </Box>
-    )
-}
+    );
+};
 
 const ComparingCards = () => {
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <>
@@ -140,5 +140,5 @@ const ComparingCards = () => {
                 </Container>
             </Stack>
         </>
-    )
-}
+    );
+};

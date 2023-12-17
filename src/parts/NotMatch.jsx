@@ -1,11 +1,11 @@
-import { useEffect } from 'react'
-import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
+import { useEffect } from 'react';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 
 export default function NotMatch() {
     useEffect(() => {
-        document.title = 'Not Found'
-    }, [])
+        document.title = 'Not Found';
+    }, []);
 
     return (
         <>
@@ -15,5 +15,5 @@ export default function NotMatch() {
                 </Typography>
             </Grid>
         </>
-    )
+    );
 }
