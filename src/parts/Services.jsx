@@ -1,28 +1,19 @@
-import * as React from 'react';
-import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import CompareIcon from '@mui/icons-material/Compare';
-import {
-    Card, Fab,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead, TablePagination,
-    TableRow
-} from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import {useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import CompareIcon from '@mui/icons-material/Compare'
+import { Card, Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material'
+import Checkbox from '@mui/material/Checkbox'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { styled } from '@mui/material/styles'
 
 const createServiceData = (serviceId, name, phone, location, rr) => {
-    return {serviceId, name, phone, location, rr};
+    return { serviceId, name, phone, location, rr }
 }
 
 const rows = [
-    createServiceData(1,'Branchack', '+420665854741', 'Praha 6', '10/3'),
+    createServiceData(1, 'Branchack', '+420665854741', 'Praha 6', '10/3'),
     createServiceData(2, 'Streerable', '+420852493671', 'Praha 8', '22/13'),
     createServiceData(3, 'Urban service', '+420753214896', 'Praha 14', '5/2'),
     createServiceData(4, 'Rechair', '+420951256846', 'Praha 5', '23/12'),
@@ -60,83 +51,84 @@ const rows = [
 ]
 
 export default function Services() {
+    useEffect(() => {
+        document.title = 'Public Services'
+    }, [])
+
     return (
-        <React.Fragment>
-            <Typography
-                component="h1"
-                variant="h4"
-                sx={{fontWeight: 'bold'}}
-            >
+        <>
+            <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
                 Public services ({rows.length})
             </Typography>
             <Divider />
-            <Container disableGutters sx={{mt: 4, mb: 4}}>
-                <ServicesTable/>
+            <Container disableGutters sx={{ mt: 4, mb: 4 }}>
+                <ServicesTable />
             </Container>
-        </React.Fragment>
-    );
+        </>
+    )
 }
 
 const ServicesTable = () => {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const cellAlign = 'left';
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-    const [checked, setChecked] = useState(new Array(rows.length).fill(false));
-    const navigate = useNavigate();
+    const [page, setPage] = useState(0)
+    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const cellAlign = 'left'
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
+    const [checked, setChecked] = useState(new Array(rows.length).fill(false))
+    const navigate = useNavigate()
+
+    const StyledLink = styled(Link)`
+        text-decoration: none;
+        color: #3f51b5;
+        &:visited {
+            color: #3f51b5;
+        }
+        &:hover {
+            text-decoration: underline;
+        }
+    `
 
     const handleCheckbox = (position, e) => {
-        if (checked.filter((i) => i).length >= 3 && e.target.checked) return;
-        const updated = checked.map((item, index) => index === position ? !item : item);
-        setChecked(updated);
-    };
+        if (checked.filter((i) => i).length >= 3 && e.target.checked) return
+        const updated = checked.map((item, index) => (index === position ? !item : item))
+        setChecked(updated)
+    }
 
     const handleDisabled = (index) => {
-        return checked.filter((p) => p === true).length >= 3 &&
-            !checked[index];
-    };
+        return checked.filter((p) => p === true).length >= 3 && !checked[index]
+    }
 
     const handleFab = () => {
-        return checked.filter((i) => i).length < 2;
+        return checked.filter((i) => i).length < 2
     }
 
     const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+        setPage(newPage)
+    }
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+        setRowsPerPage(parseInt(event.target.value, 10))
+        setPage(0)
+    }
 
-    const visibleRows = useMemo(() =>
-        rows.slice(
-            page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage
-        ),
-        [page, rowsPerPage],
-    );
+    const visibleRows = useMemo(() => rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [page, rowsPerPage])
 
     return (
-        <React.Fragment>
+        <>
             <Card>
                 <TableContainer component={Paper}>
                     <Table>
-                        <ServicesTableHead/>
+                        <ServicesTableHead />
                         <TableBody>
                             {visibleRows.map((row, index) => {
                                 return (
-                                    <TableRow
-                                        key={row.serviceId}
-                                        hover
-                                        sx={{cursor: 'pointer'}}
-                                        // onClick={() => navigate(row.serviceId)}
-                                    >
-                                        <TableCell align={cellAlign}>{row.name}</TableCell>
+                                    <TableRow key={row.serviceId}>
+                                        <TableCell align={cellAlign}>
+                                            <StyledLink to={'../services/' + row.serviceId}>{row.name}</StyledLink>
+                                        </TableCell>
                                         <TableCell align={cellAlign}>{row.phone}</TableCell>
                                         <TableCell align={cellAlign}>{row.location}</TableCell>
                                         <TableCell align={cellAlign}>{row.rr}</TableCell>
-                                        <TableCell align='right' padding="checkbox">
+                                        <TableCell align='right' padding='checkbox'>
                                             <Checkbox
                                                 disabled={handleDisabled(index)}
                                                 checked={checked[index]}
@@ -144,22 +136,22 @@ const ServicesTable = () => {
                                             />
                                         </TableCell>
                                     </TableRow>
-                                );
+                                )
                             })}
                             {emptyRows > 0 && (
                                 <TableRow
                                     style={{
-                                        height: 53 * emptyRows,
+                                        height: 53 * emptyRows
                                     }}
                                 >
-                                    <TableCell colSpan={6}/>
+                                    <TableCell colSpan={6} />
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
                     <TablePagination
                         count={rows.length}
-                        component="div"
+                        component='div'
                         page={page}
                         rowsPerPage={rowsPerPage}
                         rowsPerPageOptions={[10, 20, 50]}
@@ -168,35 +160,47 @@ const ServicesTable = () => {
                     />
                 </TableContainer>
             </Card>
-            <Fab disabled={handleFab()}
-                 variant="extended"
-                 color="primary"
-                 style={{
-                     position: 'fixed',
-                     top: 'auto',
-                     left: 'auto',
-                     margin: 0,
-                     right: 40,
-                     bottom: 20}}
+            <Fab
+                disabled={handleFab()}
+                variant='extended'
+                color='primary'
+                style={{
+                    position: 'fixed',
+                    top: 'auto',
+                    left: 'auto',
+                    margin: 0,
+                    right: 40,
+                    bottom: 20
+                }}
+                onClick={() => navigate('../../compare')}
             >
-                <CompareIcon/>
+                <CompareIcon />
                 Compare
             </Fab>
-        </React.Fragment>
-    );
+        </>
+    )
 }
 
 const ServicesTableHead = () => {
-
     return (
         <TableHead>
             <TableRow>
-                <TableCell align="left"><Typography fontWeight="bold" >Public service name</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Phone</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Location</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Reserved/Resolved</Typography></TableCell>
-                <TableCell align="left"><Typography fontWeight="bold" >Compare</Typography></TableCell>
+                <TableCell align='left'>
+                    <Typography fontWeight='bold'>Public service name</Typography>
+                </TableCell>
+                <TableCell align='left'>
+                    <Typography fontWeight='bold'>Phone</Typography>
+                </TableCell>
+                <TableCell align='left'>
+                    <Typography fontWeight='bold'>Location</Typography>
+                </TableCell>
+                <TableCell align='left'>
+                    <Typography fontWeight='bold'>Reserved/Resolved</Typography>
+                </TableCell>
+                <TableCell align='left'>
+                    <Typography fontWeight='bold'>Compare</Typography>
+                </TableCell>
             </TableRow>
         </TableHead>
-    );
+    )
 }
