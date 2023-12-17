@@ -24,6 +24,8 @@ import Services from '../parts/Services'
 import MapPage from '../parts/MapPage'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import ServiceInfo from '../parts/ServiceInfo'
+import { auth } from '../config/firebase';
+import { signOut } from 'firebase/auth';
 
 const defaultTheme = createTheme({
     palette: {
@@ -86,6 +88,17 @@ export default function DrawerAppBar() {
     const toggleDrawer = () => setOpen(!open)
     const navigate = useNavigate()
 
+    const handleLogout = () => {
+        signOut(auth)
+            .then(() => {
+                console.log(auth.currentUser)
+                navigate("/");
+            })
+            .catch((error) => {
+                console.log("Logout failed: ", error);
+        });
+    }
+
     return (
         <ThemeProvider theme={defaultTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -111,8 +124,12 @@ export default function DrawerAppBar() {
                         <Typography component='h1' variant='h6' color='black' noWrap sx={{ flexGrow: 1 }}>
                             Analyst: Name
                         </Typography>
-                        <IconButton color='black' aria-label='quit' href='/'>
-                            <ExitToApp />
+                        <IconButton
+                            color='black'
+                            aria-label='quit'
+                            onClick={handleLogout}
+                        >
+                            <ExitToApp/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
