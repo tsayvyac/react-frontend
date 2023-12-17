@@ -68,7 +68,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "echo \"[Husky] pre-commit linting and formatting\" && npm run lint && npm run format"
+            "pre-commit": "echo \"[Husky] pre-commit linting and formatting\" && npm run lint && npm run format && prettier . --write"
         }
     },
     "lint-staged": {
