@@ -10,20 +10,20 @@ import ServiceInfo from './parts/ServiceInfo';
 import ComparePage from './parts/ComparePage';
 
 const App = () => {
-    return (
-        <Routes>
-            <Route index element={<Login />}></Route>
-            <Route path='main/*' element={<Main />}>
-                <Route index path='dashboard' element={<Dashboard />}></Route>
-                <Route path='issues' element={<Issues />}></Route>
-                <Route path='services' element={<Services />}></Route>
-                <Route path='map' element={<MapPage />}></Route>
-                <Route path='services/:serviceId' element={<ServiceInfo />}></Route>
-            </Route>
-            <Route path='compare' element={<ComparePage />}></Route>
-            <Route path='*' element={<NotMatch />}></Route>
-        </Routes>
-    );
+   return (
+      <Routes>
+         <Route index element={<Login />}></Route>
+         <Route path='main/*' element={<Main />}>
+            <Route index path='dashboard' element={<Dashboard />}></Route>
+            <Route path='issues' element={<Issues />}></Route>
+            <Route path='services' element={<Services />}></Route>
+            <Route path='map' element={<MapPage />}></Route>
+            <Route path='services/:serviceId' element={<ServiceInfo />}></Route>
+         </Route>
+         <Route path='compare' element={<ComparePage />}></Route>
+         <Route path='*' element={<NotMatch />}></Route>
+      </Routes>
+   );
 };
 
 export default App;
