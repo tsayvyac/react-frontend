@@ -8,6 +8,7 @@ import MapPage from './parts/MapPage';
 import NotMatch from './parts/NotMatch';
 import ServiceInfo from './parts/ServiceInfo';
 import ComparePage from './parts/ComparePage';
+import IssuePage from './parts/IssuePage';
 
 const App = () => {
    return (
@@ -16,6 +17,7 @@ const App = () => {
          <Route path='main/*' element={<Main />}>
             <Route index path='dashboard' element={<Dashboard />}></Route>
             <Route path='issues' element={<Issues />}></Route>
+            <Route path='issues/:index' element={<IssuePage />}></Route>
             <Route path='services' element={<Services />}></Route>
             <Route path='map' element={<MapPage />}></Route>
             <Route path='services/:serviceId' element={<ServiceInfo />}></Route>

@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 import { Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { useTheme } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 
 const dummyData = [
    { title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
@@ -218,6 +219,17 @@ const IssuesTable = (props) => {
    };
 
    const populateTable = () => {
+      const StyledLink = styled(Link)`
+         text-decoration: none;
+         color: #3f51b5;
+         &:visited {
+            color: #3f51b5;
+         }
+         &:hover {
+            text-decoration: underline;
+         }
+      `;
+
       return (
          <>
             {visibleRows.map((row, index) => (
@@ -227,7 +239,9 @@ const IssuesTable = (props) => {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                >
                   <TableCell component='th' scope='row'>
-                     {row?.title} {/* Safely accessing title */}
+                     <StyledLink to={{ pathname: '../issues/' + row.title }} state={{ ...row }}>
+                        {row.title}
+                     </StyledLink>
                   </TableCell>
                   <TableCell align='left'>{row.category}</TableCell>
                   <TableCell align='left'>{row.address}</TableCell>
