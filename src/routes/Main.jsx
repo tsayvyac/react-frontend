@@ -26,6 +26,7 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import ServiceInfo from '../parts/ServiceInfo';
 import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import IssuePage from '../parts/IssuePage';
 
 const defaultTheme = createTheme({
    palette: {
@@ -185,6 +186,7 @@ export default function DrawerAppBar() {
                   <Routes>
                      <Route index path='dashboard' element={<Dashboard />}></Route>
                      <Route path='issues' element={<Issues />}></Route>
+                     <Route path='issues/:index' element={<IssuePage />}></Route>
                      <Route path='services' element={<Services />}></Route>
                      <Route path='map' element={<MapPage />}></Route>
                      <Route path='services/:serviceId' element={<ServiceInfo />}></Route>

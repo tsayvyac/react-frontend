@@ -13,6 +13,11 @@ const instance = axios.create({
    }
 });
 
+instance.interceptors.request.use(config => {
+   config.headers.Authorization = `Bearer ${accessToken}`;
+   return config;
+})
+
 function getServices() {
    return instance.get('/services');
 }
