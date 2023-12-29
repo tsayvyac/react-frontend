@@ -17,7 +17,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { Alert } from '@mui/material';
 import { useState } from 'react';
-import { tokenSetter } from '../api/apiService';
+import Cookies from 'js-cookie';
 
 const defaultTheme = createTheme();
 
@@ -37,11 +37,11 @@ export default function Login() {
             return userCredential.user.getIdToken(true);
          })
          .then((token) => {
-            tokenSetter.setToken(token);
+            Cookies.set('token', token);
             navigate('/main');
          })
-         .catch((error) => {
-            setError(error.message);
+         .catch(() => {
+            setError('Incorrect email or password');
          })
          .finally(() => {
             setLoading(false);
