@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import {
    Card,
    Chip,
+   CircularProgress,
    Dialog,
    DialogActions,
    DialogTitle,
@@ -31,6 +32,7 @@ import Avatar from '@mui/material/Avatar';
 import { deepPurple } from '@mui/material/colors';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { api } from '../api/apiService';
 
 const createIssuesData = (issueId, category, location, status, dateResTime) => {
    return { issueId, category, location, status, dateResTime };
@@ -79,14 +81,45 @@ const filterData = (issues, filter) => {
 
 export default function ServiceInfo() {
    const { serviceId } = useParams();
-   useEffect(() => {
-      document.title = 'Service ' + serviceId;
-   });
+   const [service, setService] = useState({});
+   const [isLoading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
 
-   return (
+   useEffect(() => {
+      setLoading(true);
+      const fetch = async () => {
+         try {
+            const response = await api.getServicesByUid(serviceId);
+            setService(response.data);
+         } catch (e) {
+            console.error(`Error occurred: ${e}`);
+            setError('Error fetching data. Please, try again later!');
+         } finally {
+            setLoading(false);
+         }
+      };
+      document.title = 'Service Info';
+      fetch();
+   }, [serviceId]);
+
+   if (error) {
+      return <Typography>{error}</Typography>;
+   }
+
+   return isLoading ? (
+      <Box
+         sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            my: 25
+         }}
+      >
+         <CircularProgress />
+      </Box>
+   ) : (
       <>
-         <Header />
-         <InformationPaper />
+         <Header service={service} />
+         <InformationPaper service={service} />
          <Container disableGutters sx={{ mt: 4, mb: 4 }}>
             <IssuesTable />
          </Container>
@@ -94,8 +127,7 @@ export default function ServiceInfo() {
    );
 }
 
-const Header = () => {
-   const { serviceId } = useParams();
+const Header = (props) => {
    const navigate = useNavigate();
 
    return (
@@ -108,7 +140,7 @@ const Header = () => {
             }}
          >
             <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
-               Public service: {serviceId}
+               Public service: {props.service.name ?? 'null'}
             </Typography>
             <Button startIcon={<ArrowBack />} variant='contained' color='error' onClick={() => navigate(-1)}>
                Back
@@ -123,7 +155,7 @@ const Header = () => {
    );
 };
 
-const InformationPaper = () => {
+const InformationPaper = (props) => {
    const theme = useTheme();
 
    return (
@@ -150,7 +182,7 @@ const InformationPaper = () => {
                         mb: 3
                      }}
                   >
-                     Praha 6, Czech Republic | +420951256846
+                     {props.service.address ?? 'null'} | {props.service.phoneNumber ?? 'null'}
                   </Typography>
                </Box>
                <Avatar sx={{ bgcolor: deepPurple[500] }}>
@@ -158,10 +190,7 @@ const InformationPaper = () => {
                </Avatar>
             </Box>
             <Typography variant='subtitle2' color={theme.palette.text.secondary}>
-               Rechair is a public service initiative dedicated to repairing and revitalizing public furniture and fixtures within our
-               communities. This project aims to enhance the quality of public spaces by ensuring that benches, tables, bus stops, and other
-               amenities remain in excellent condition. By doing so, Rechair contributes to a more inviting, comfortable, and functional
-               environment for everyone.
+               {props.service.description}
             </Typography>
          </Container>
       </>
