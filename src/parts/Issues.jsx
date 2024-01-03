@@ -9,40 +9,16 @@ import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { styled, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-
-const dummyData = [
-   { title: 'Issue 1', category: 'Reserved', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
-   { title: 'Issue 2', category: 'Resolved', address: '123 Street', status: 'Solving', date: '2023-01-01' },
-   { title: 'Issue 3', category: 'Solving', address: '123 Street', status: 'Solving', date: '2023-01-01' },
-   { title: 'Issue 4', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01' },
-   { title: 'Issue 5', category: 'Reserved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
-   { title: 'Issue 6', category: 'Resolved', address: '789 Boulevard', status: 'Reserved', date: '2023-02-16' },
-   { title: 'Issue 7', category: 'Solving', address: '101 Main Street', status: 'Resolved', date: '2023-02-17' },
-   { title: 'Issue 8', category: 'Published', address: '222 Park Lane', status: 'Published', date: '2023-02-18' },
-   { title: 'Issue 9', category: 'Reserved', address: '333 Central Avenue', status: 'Solving', date: '2023-02-19' },
-   { title: 'Issue 10', category: 'Resolved', address: '444 Elm Street', status: 'Resolved', date: '2023-02-20' },
-   { title: 'Issue 11', category: 'Solving', address: '123 Street', status: 'Resolved', date: '2023-01-01' },
-   { title: 'Issue 12', category: 'Published', address: '123 Street', status: 'Reserved', date: '2023-01-01' },
-   { title: 'Issue 13', category: 'Reserved', address: '123 Street', status: 'Solving', date: '2023-01-01' },
-   { title: 'Issue 14', category: 'Published', address: '123 Street', status: 'Published', date: '2023-01-01' },
-   { title: 'Issue 15', category: 'Resolved', address: '456 Avenue', status: 'Resolved', date: '2023-02-15' },
-   { title: 'Issue 16', category: 'Solving', address: '789 Boulevard', status: 'Published', date: '2023-02-16' },
-   { title: 'Issue 17', category: 'Published', address: '101 Main Street', status: 'Reserved', date: '2023-02-17' },
-   { title: 'Issue 18', category: 'Solving', address: '222 Park Lane', status: 'Solving', date: '2023-02-18' },
-   { title: 'Issue 19', category: 'Resolved', address: '333 Central Avenue', status: 'Published', date: '2023-02-19' },
-   { title: 'Issue 20', category: 'Reserved', address: '444 Elm Street', status: 'Reserved', date: '2023-02-20' }
-];
+import Button from '@mui/material/Button';
+import { api } from '../api/apiIssues';
+// import getAddressFromCoordinates from '../api/AddressBuilder';
 
 function CustomTabPanel(props) {
    const { children, value, index, ...other } = props;
 
    return (
       <div role='tabpanel' hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
-         {value === index && (
-            <Box sx={{ p: 3 }}>
-               <Typography>{children}</Typography>
-            </Box>
-         )}
+         {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
       </div>
    );
 }
@@ -54,16 +30,41 @@ CustomTabPanel.propTypes = {
 };
 
 export default function Issues() {
+   const [dummyData, setListIssues] = useState([]);
+   const [categories, setCategories] = useState([]);
+   // const [loading, setLoading] = useState(true); // Track loading state
+
    useEffect(() => {
       document.title = 'Issues';
+      const fetch = async () => {
+         try {
+            const response = await api.getIssues();
+            const responseCategories = await api.getCategories();
+            setListIssues(response.data.issues);
+            setCategories(responseCategories.data);
+            const modifiedIssues = response.data.issues.map((issue) => {
+               // const address = getAddressFromCoordinates(issue.coordinates.latitude, issue.coordinates.longitude);
+               const creationDate = new Date(issue.creationDate).toLocaleDateString();
+               return {
+                  ...issue,
+                  creationDate
+               };
+            });
+            setListIssues(modifiedIssues);
+         } catch (e) {
+            console.error(`Error occurred: ${e}`);
+         }
+      };
+      fetch();
    }, []);
+
    const theme = useTheme();
    const [value, setValue] = useState(0);
    const [filter, setFilter] = useState({
       title: '',
       fromDate: '',
       toDate: '',
-      status: 'All'
+      status: 'ALL'
    });
 
    const handleFilterChange = (event) => {
@@ -72,6 +73,13 @@ export default function Issues() {
 
    return (
       <>
+         <Button
+            onClick={() => {
+               console.log(api.getCategories());
+            }}
+         >
+            Test Api
+         </Button>
          <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
             Issues
          </Typography>
@@ -80,7 +88,12 @@ export default function Issues() {
             <Grid container spacing={3} sx={{ flexDirection: 'column', marginLeft: '5px' }}>
                <IssuesCategories value={value} setFilter={setFilter} setValue={setValue} filter={filter} />
                <IssuesFilter handleFilterChange={handleFilterChange} />
-               <IssuesTable filter={filter} issueStatusColors={theme.palette.issuesCategories} dummyData={dummyData} />
+               <IssuesTable
+                  filter={filter}
+                  issueStatusColors={theme.palette.issuesCategories}
+                  dummyData={dummyData}
+                  categories={categories}
+               />
             </Grid>
          </Container>
       </>
@@ -89,7 +102,7 @@ export default function Issues() {
 
 const IssuesCategories = (props) => {
    const handleCategoryChange = (event, newValue) => {
-      const statusTypes = ['All', 'Published', 'Reserved', 'Solving', 'Resolved'];
+      const statusTypes = ['ALL', 'PUBLISHED', 'RESERVED', 'SOLVING', 'RESOLVED'];
       props.setFilter({ ...props.filter, status: statusTypes[newValue] });
       props.setValue(newValue);
    };
@@ -97,10 +110,10 @@ const IssuesCategories = (props) => {
    return (
       <Box sx={{ borderBottom: 1, borderColor: 'divider', flexDirection: 'column' }}>
          <Tabs value={props.value} onChange={handleCategoryChange} aria-label='basic tabs example'>
-            <Tab label='All' />
+            <Tab label='ALL' />
             <Tab label='Published' />
             <Tab label='Reserved' />
-            <Tab label='Solving' />
+            <Tab label='SOLVING' />
             <Tab label='Resolved' />
          </Tabs>
       </Box>
@@ -164,20 +177,16 @@ const filterData = (data, filter) => {
          return false;
       }
 
-      return !(filter.status !== 'All' && item.status !== filter.status);
+      return !(filter.status !== 'ALL' && item.status !== filter.status);
    });
 };
-
 const IssuesTable = (props) => {
    const [page, setPage] = useState(0);
    const [rowsPerPage, setRowsPerPage] = useState(10);
 
-   // If face performance issues we should move this function outside of this React component
-   // This way, the function won't be redefined on every render of the component, which can be beneficial for performance.
-
    const visibleRows = useMemo(
-      () => filterData(dummyData, props.filter).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-      [page, rowsPerPage, props.filter]
+      () => filterData(props.dummyData, props.filter).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+      [page, rowsPerPage, props.filter, props.dummyData]
    );
 
    const handleChangeRowsPerPage = (event) => {
@@ -218,6 +227,14 @@ const IssuesTable = (props) => {
       };
    };
 
+   const getCategoryName = (categoryId) => {
+      // Найти категорию по айди в массиве категорий
+      const category = props.categories.find((cat) => cat.id === categoryId);
+
+      // Вернуть название категории, если найдено, иначе вернуть пустую строку
+      return category ? category.name : '';
+   };
+
    const populateTable = () => {
       const StyledLink = styled(Link)`
          text-decoration: none;
@@ -233,27 +250,25 @@ const IssuesTable = (props) => {
       return (
          <>
             {visibleRows.map((row, index) => (
-               <TableRow
-                  key={index} // Using index as a key
-                  hover
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-               >
+               <TableRow key={index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell component='th' scope='row'>
-                     <StyledLink to={{ pathname: '../issues/' + row.title }} state={{ ...row }}>
+                     <StyledLink to={`../issues/${row.id}`} state={{ ...row }}>
                         {row.title}
                      </StyledLink>
                   </TableCell>
-                  <TableCell align='left'>{row.category}</TableCell>
+                  {/* Используем getCategoryName для получения названия категории */}
+                  <TableCell align='left'>{getCategoryName(row.categoryId)}</TableCell>
                   <TableCell align='left'>{row.address}</TableCell>
                   <TableCell align='left'>
                      <div style={getStatusBarStyle(row.status)}>{row.status}</div>
                   </TableCell>
-                  <TableCell align='left'>{row.date}</TableCell>
+                  <TableCell align='left'>{row.creationDate}</TableCell>
                </TableRow>
             ))}
          </>
       );
    };
+
    return (
       <Box>
          <Table sx={{ minWidth: 650 }} aria-label='Data table'>
@@ -279,7 +294,7 @@ const IssuesTable = (props) => {
             <TableBody>{populateTable()}</TableBody>
          </Table>
          <TablePagination
-            count={filterData(dummyData, props.filter).length}
+            count={filterData(props.dummyData, props.filter).length}
             component='div'
             page={page}
             rowsPerPage={rowsPerPage}
