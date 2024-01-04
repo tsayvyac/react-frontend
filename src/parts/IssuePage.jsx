@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { api } from '../api/apiIssues';
-import Button from '@mui/material/Button';
+import axios from 'axios';
 
 export default function IssuePage() {
    const theme = useTheme();
@@ -30,14 +30,55 @@ export default function IssuePage() {
       fetchIssueDetails();
    }, [index]);
 
-   const { address, title, status, date, photo, authorId, reservationDate, resolutionDate, description } = issueDetails;
+   const { coordinates, title, status, creationDate, photo, authorId, reservationDate, resolutionDate, description } = issueDetails;
+   const normalDate = new Date(creationDate);
+   const formattedDate = normalDate.toDateString();
+   const isResolved = status === 'RESOLVED';
+
+   const getStatusDisplay = () => {
+      if (isResolved) {
+         return `Resolved: ${resolutionDate}`;
+      } else {
+         return status;
+      }
+   };
+
+   const getResolutionDisplay = () => {
+      if (isResolved) {
+         return `Resolved by ${authorId}`;
+      } else if (status === 'Solving') {
+         return `Currently being solved by ${authorId}`;
+      } else {
+         return `Reserved: ${reservationDate}`;
+      }
+   };
+
+   const [normalizedAddress, setNormalizedAddress] = useState('');
+
+   useEffect(() => {
+      const fetchNormalizedAddress = async () => {
+         try {
+            const response = await axios.get(
+               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.latitude},${coordinates.longitude}&key=AIzaSyAYoqbho901MdEF6kk4rJJ8YxjVLzPR4Sw`
+            );
+            const address = response.data.results[0].formatted_address;
+            setNormalizedAddress(address);
+         } catch (error) {
+            console.error('Error fetching normalized address:', error);
+         }
+      };
+
+      if (coordinates && coordinates.latitude && coordinates.longitude) {
+         fetchNormalizedAddress();
+      }
+   }, [coordinates]);
 
    return (
       <>
          <Stack sx={{ width: '100%' }} direction='column' spacing={2}>
             <Box>
                <Typography component='h1' variant='h4'>
-                  {title} - {status}
+                  {title} - {getStatusDisplay()}
                </Typography>
                <Divider />
             </Box>
@@ -59,13 +100,16 @@ export default function IssuePage() {
                               Information
                            </Typography>
                            <Typography fontSize='20px' marginBottom={'10px'} color={theme.palette.text.secondary}>
-                              Resolved within 3d 14h by {authorId}.
+                              {status === 'PUBLISHED' && `Published on ${formattedDate}`}
+                              {status === 'SOLVING' && `Is now solving by ${authorId}`}
+                              {status === 'RESERVED' && `Reserved by ${authorId}`}
+                              {status === 'SOLVED' && `Solved by ${authorId}`}
                            </Typography>
                            <Typography variant='subtitle1' color={theme.palette.text.secondary} fontSize='17px'>
-                              Address: {address}
+                              Address: {normalizedAddress || 'Loading address...'}
                            </Typography>
                            <Typography variant='subtitle2' color={theme.palette.text.secondary} fontSize='17px'>
-                              Published on: {date}
+                              Published on: {formattedDate}
                            </Typography>
                            {reservationDate && (
                               <Typography variant='subtitle2' color={theme.palette.text.secondary} fontSize='17px'>
@@ -81,11 +125,9 @@ export default function IssuePage() {
             <Grid>
                <Container component={Paper} sx={{ p: 2 }}>
                   <Box>
-                     {resolutionDate && (
-                        <Typography variant='subtitle2' color={theme.palette.primary.main} fontSize='17px'>
-                           Resolved: {resolutionDate}
-                        </Typography>
-                     )}
+                     <Typography variant='subtitle2' color={theme.palette.primary.main} fontSize='17px'>
+                        {getResolutionDisplay()}
+                     </Typography>
                      <Typography variant='subtitle1' fontWeight='bold' fontSize='25px'>
                         Description:
                      </Typography>

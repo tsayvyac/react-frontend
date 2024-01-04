@@ -9,9 +9,8 @@ import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { styled, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
 import { api } from '../api/apiIssues';
-// import getAddressFromCoordinates from '../api/AddressBuilder';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
    const { children, value, index, ...other } = props;
@@ -32,6 +31,7 @@ CustomTabPanel.propTypes = {
 export default function Issues() {
    const [dummyData, setListIssues] = useState([]);
    const [categories, setCategories] = useState([]);
+   const [normalizedAddresses, setNormalizedAddresses] = useState([]); // Add this line
    // const [loading, setLoading] = useState(true); // Track loading state
 
    useEffect(() => {
@@ -51,6 +51,22 @@ export default function Issues() {
                };
             });
             setListIssues(modifiedIssues);
+            // eslint-disable-next-line no-undef
+            const addresses = await Promise.all(
+               modifiedIssues.map(async (issue) => {
+                  try {
+                     const response = await axios.get(
+                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${issue.coordinates.latitude},${issue.coordinates.longitude}&key=AIzaSyAYoqbho901MdEF6kk4rJJ8YxjVLzPR4Sw`
+                     );
+                     const address = response.data.results[0].formatted_address;
+                     return address;
+                  } catch (error) {
+                     console.error('Error fetching normalized address:', error);
+                     return 'AAA'; // Return an empty string on error
+                  }
+               })
+            );
+            setNormalizedAddresses(addresses);
          } catch (e) {
             console.error(`Error occurred: ${e}`);
          }
@@ -73,13 +89,6 @@ export default function Issues() {
 
    return (
       <>
-         <Button
-            onClick={() => {
-               console.log(api.getCategories());
-            }}
-         >
-            Test Api
-         </Button>
          <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
             Issues
          </Typography>
@@ -93,6 +102,7 @@ export default function Issues() {
                   issueStatusColors={theme.palette.issuesCategories}
                   dummyData={dummyData}
                   categories={categories}
+                  normalizedAddresses={normalizedAddresses}
                />
             </Grid>
          </Container>
@@ -202,16 +212,16 @@ const IssuesTable = (props) => {
       let backgroundColor;
 
       switch (status) {
-         case 'Resolved':
+         case 'RESOLVED':
             backgroundColor = props.issueStatusColors.resolved;
             break;
-         case 'Solving':
+         case 'SOLVING':
             backgroundColor = props.issueStatusColors.solving;
             break;
-         case 'Reserved':
+         case 'RESERVED':
             backgroundColor = props.issueStatusColors.reserved;
             break;
-         case 'Published':
+         case 'PUBLISHED':
             backgroundColor = props.issueStatusColors.published;
             break;
          default:
@@ -258,7 +268,7 @@ const IssuesTable = (props) => {
                   </TableCell>
                   {/* Используем getCategoryName для получения названия категории */}
                   <TableCell align='left'>{getCategoryName(row.categoryId)}</TableCell>
-                  <TableCell align='left'>{row.address}</TableCell>
+                  <TableCell align='left'>{props.normalizedAddresses[index]}</TableCell>
                   <TableCell align='left'>
                      <div style={getStatusBarStyle(row.status)}>{row.status}</div>
                   </TableCell>
