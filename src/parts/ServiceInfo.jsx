@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -14,6 +14,7 @@ import {
    DialogActions,
    DialogTitle,
    FormControl,
+   LinearProgress,
    MenuItem,
    Paper,
    Select,
@@ -33,44 +34,7 @@ import { deepPurple } from '@mui/material/colors';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { api } from '../api/apiService';
-
-const createIssuesData = (issueId, category, location, status, dateResTime) => {
-   return { issueId, category, location, status, dateResTime };
-};
-
-const issues = [
-   createIssuesData('is-00201241-pr6', 'Chair Fix', 'Cukrovarnická 27, Praha 6', 'Resolved', '22.05.2023/1d 22h'),
-   createIssuesData('is-93597877-pr1', 'Nkjvbzow', 'Ndtyeax 49, Praha 6', 'Solving', '14.11.2023/2d 47h'),
-   createIssuesData('is-45650532-pr5', 'Noztxowouha', 'Uxykqqo 49, Praha 3', 'Resolved', '12.11.2023/1d 50h'),
-   createIssuesData('is-54455678-pr5', 'Bdpmrrjqcex', 'Fecdsqpdd 95, Praha 1', 'Resolved', '07.01.2023/4d 20h'),
-   createIssuesData('is-26541015-pr6', 'Mcwbshvurf', 'Pyylcvx 21, Praha 7', 'Resolved', '19.11.2023/3d 63h'),
-   createIssuesData('is-81214731-pr6', 'Recfcab', 'Fipscbvob 97, Praha 1', 'Resolved', '23.11.2023/1d 78h'),
-   createIssuesData('is-63215000-pr6', 'Zlyvcqfto', 'Ivdrqr 88, Praha 3', 'Solving', '18.12.2023/3d 32h'),
-   createIssuesData('is-51345164-pr5', 'Igqpzi', 'Xdjuqyji 40, Praha 2', 'Resolved', '13.01.2023/4d 78h'),
-   createIssuesData('is-45573999-pr1', 'Ecnggqdeimp', 'Bwqcls 83, Praha 5', 'Resolved', '02.01.2023/1d 94h'),
-   createIssuesData('is-38329205-pr4', 'Ndsvvfbtp', 'Wzpknn 80, Praha 6', 'Resolved', '12.12.2023/3d 98h'),
-   createIssuesData('is-82374281-pr3', 'Zqbsiv', 'Pjrwpqxy 94, Praha 4', 'Solving', '03.12.2023/4d 15h'),
-   createIssuesData('is-44540739-pr6', 'Uiccera', 'Pjdqajmfn 46, Praha 2', 'Resolved', '22.01.2023/4d 42h'),
-   createIssuesData('is-51292268-pr8', 'Ntwzxa', 'Mfdbcgx 60, Praha 8', 'Resolved', '12.02.2023/2d 14h'),
-   createIssuesData('is-82024045-pr2', 'Bmhaqxyzx', 'Atwgvcsup 62, Praha 9', 'Resolved', '15.01.2023/4d 43h'),
-   createIssuesData('is-53632596-pr9', 'Gtowzrdnj', 'Fkqwszqts 17, Praha 8', 'Resolved', '14.01.2023/3d 30h'),
-   createIssuesData('is-80124972-pr3', 'Isrcnld', 'Ajzjso 84, Praha 2', 'Resolved', '18.01.2023/2d 22h'),
-   createIssuesData('is-93410446-pr1', 'Idbtkwj', 'Qpasqyq 79, Praha 6', 'Solving', '16.11.2023/3d 18h'),
-   createIssuesData('is-94084244-pr9', 'Zqwwru', 'Spgolsoq 82, Praha 1', 'Resolved', '18.01.2023/4d 28h'),
-   createIssuesData('is-19592153-pr6', 'Ruivdktkeno', 'Wbbtvqaah 58, Praha 4', 'Solving', '22.01.2023/4d 60h'),
-   createIssuesData('is-53768904-pr6', 'Zgefngzyyz', 'Atrbtvv 96, Praha 8', 'Resolved', '14.01.2023/1d 66h'),
-   createIssuesData('is-33538986-pr8', 'Xhfxtbymiw', 'Dgnzzu 66, Praha 2', 'Resolved', '14.12.2023/1d 22h'),
-   createIssuesData('is-24748246-pr3', 'Hrjiskay', 'Nahiyjks 15, Praha 1', 'Resolved', '22.12.2023/1d 66h'),
-   createIssuesData('is-70766851-pr4', 'Ocjvbopult', 'Omvpkryke 17, Praha 5', 'Resolved', '23.12.2023/3d 10h'),
-   createIssuesData('is-56141668-pr2', 'Qgjagavjfdl', 'Kjdorxw 89, Praha 1', 'Resolved', '26.01.2023/2d 47h'),
-   createIssuesData('is-38647101-pr3', 'Pjzilu', 'Ulryex 77, Praha 1', 'Resolved', '12.02.2023/3d 28h'),
-   createIssuesData('is-63797530-pr1', 'Zysofowls', 'Ejcjfm 91, Praha 3', 'Solving', '01.11.2023/2d 56h'),
-   createIssuesData('is-93546896-pr5', 'Pfpyaxsku', 'Nqjesnjrq 77, Praha 2', 'Solving', '12.11.2023/2d 75h'),
-   createIssuesData('is-48323478-pr1', 'Gzynsnhcvv', 'Atmsbb 46, Praha 7', 'Solving', '25.01.2023/1d 15h'),
-   createIssuesData('is-06447676-pr5', 'Ppzzafoksja', 'Vwzpbdl 17, Praha 6', 'Resolved', '04.12.2023/3d 90h'),
-   createIssuesData('is-31248441-pr6', 'Dssvtyeg', 'Gvfbyetdz 93, Praha 3', 'Solving', '17.12.2023/1d 65h'),
-   createIssuesData('is-07481851-pr5', 'Mgzssqchvur', 'Isbnnnx 71, Praha 7', 'Solving', '03.01.2023/2d 80h')
-];
+import { format } from 'date-fns';
 
 const filterData = (issues, filter) => {
    return issues.filter((issue) => {
@@ -121,7 +85,7 @@ export default function ServiceInfo() {
          <Header service={service} />
          <InformationPaper service={service} />
          <Container disableGutters sx={{ mt: 4, mb: 4 }}>
-            <IssuesTable />
+            <IssuesTable serviceId={serviceId} />
          </Container>
       </>
    );
@@ -182,7 +146,7 @@ const InformationPaper = (props) => {
                         mb: 3
                      }}
                   >
-                     {props.service.address ?? 'null'} | {props.service.phoneNumber ?? 'null'}
+                     {props.service.address ?? 'null'} | {props.service.phoneNumber ?? 'null'} | {props.service.email ?? 'null'}
                   </Typography>
                </Box>
                <Avatar sx={{ bgcolor: deepPurple[500] }}>
@@ -257,8 +221,8 @@ const IssuesToolbar = (props) => {
                   <FormControl fullWidth>
                      <Select value={status} onChange={handleChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
                         <MenuItem value=''>All</MenuItem>
-                        <MenuItem value='Resolved'>Resolved</MenuItem>
-                        <MenuItem value='Solving'>Solving</MenuItem>
+                        <MenuItem value='SOLVED'>SOLVED</MenuItem>
+                        <MenuItem value='SOLVING'>SOLVING</MenuItem>
                      </Select>
                   </FormControl>
                </Box>
@@ -284,7 +248,6 @@ const IssuesToolbar = (props) => {
                </Box>
             </Stack>
             <Box>
-               {/*<Button variant="outlined" sx={{ mr: 2 }}>Filter</Button>*/}
                <Button variant='contained' sx={{ mr: 2 }} onClick={handleOpenDialog}>
                   Export to PDF
                </Button>
@@ -308,41 +271,60 @@ const IssuesToolbar = (props) => {
    );
 };
 
-const IssuesTable = () => {
+const IssuesTable = (props) => {
+   const [isLoading, setLoading] = useState(false);
+   const [categories, setCategories] = useState([]);
+   const [issues, setIssues] = useState([]);
+   const [error, setError] = useState(null);
    const [page, setPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(10);
+   const rowsPerPage = 10;
    const cellAlign = 'left';
    const [filter, setFilter] = useState({
       status: 'All',
       dateFrom: '',
       dateTo: ''
    });
+
+   useEffect(() => {
+      setLoading(true);
+      const fetch = async () => {
+         try {
+            const issuesRes = await api.getServiceIssues(props.serviceId);
+            const categoriesRes = await api.getCategories();
+            setCategories(categoriesRes.data);
+            setIssues(issuesRes.data.issues);
+         } catch (e) {
+            console.error(`Error occurred: ${e}`);
+            setError('Error fetching data. Please, try again later!');
+         } finally {
+            setLoading(false);
+         }
+      };
+      fetch();
+   }, [page]);
+
    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filterData(issues, filter).length) : 0;
 
    const handleChangePage = (event, newPage) => {
       setPage(newPage);
    };
 
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   };
-
-   const visibleIssues = useMemo(
-      () => filterData(issues, filter).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-      [page, rowsPerPage, filter]
-   );
-
    const colors = {
-      Resolved: 'success',
-      Solving: 'secondary'
+      SOLVED: 'success',
+      SOLVING: 'secondary'
    };
 
    const chipColor = (status) => {
       return colors[status];
    };
 
-   return (
+   if (error) {
+      return <Typography>{error}</Typography>;
+   }
+
+   return isLoading ? (
+      <LinearProgress />
+   ) : (
       <>
          <Card>
             <TableContainer component={Paper}>
@@ -350,28 +332,30 @@ const IssuesTable = () => {
                <Table>
                   <IssuesTableHead />
                   <TableBody>
-                     {visibleIssues.map((row) => {
-                        return (
-                           <TableRow key={row.issueId}>
-                              <TableCell align={cellAlign}>{row.issueId}</TableCell>
-                              <TableCell align={cellAlign}>{row.category}</TableCell>
-                              <TableCell align={cellAlign}>
-                                 <Box
-                                    sx={{
-                                       display: 'flex',
-                                       alignItems: 'center'
-                                    }}
-                                 >
-                                    <Place color='action' /> {row.location}
-                                 </Box>
-                              </TableCell>
-                              <TableCell align={cellAlign}>
-                                 <Chip label={row.status} color={chipColor(row.status)} />
-                              </TableCell>
-                              <TableCell align='right'>{row.dateResTime}</TableCell>
-                           </TableRow>
-                        );
-                     })}
+                     {filterData(issues, filter)
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((row) => {
+                           return (
+                              <TableRow key={row.id}>
+                                 <TableCell align={cellAlign}>{row.id}</TableCell>
+                                 <TableCell align={cellAlign}>{categories.find((c) => c.id === row.categoryId).name ?? 'null'}</TableCell>
+                                 <TableCell align={cellAlign}>
+                                    <Box
+                                       sx={{
+                                          display: 'flex',
+                                          alignItems: 'center'
+                                       }}
+                                    >
+                                       <Place color='action' /> Lat: {row.coordinates.latitude} Long: {row.coordinates.longitude}
+                                    </Box>
+                                 </TableCell>
+                                 <TableCell align={cellAlign}>
+                                    <Chip label={row.status} color={chipColor(row.status)} />
+                                 </TableCell>
+                                 <TableCell align='right'>{format(new Date(row.creationDate), 'dd.MM.yyyy')}</TableCell>
+                              </TableRow>
+                           );
+                        })}
                      {emptyRows > 0 && (
                         <TableRow
                            style={{
@@ -388,9 +372,8 @@ const IssuesTable = () => {
                   component='div'
                   page={page}
                   rowsPerPage={rowsPerPage}
-                  rowsPerPageOptions={[10, 20, 50]}
+                  rowsPerPageOptions={[]}
                   onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
                />
             </TableContainer>
          </Card>

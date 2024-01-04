@@ -3,7 +3,10 @@ import Cookies from 'js-cookie';
 
 export const api = {
    getServices,
-   getServicesByUid
+   getServicesByUid,
+   getServiceIssues,
+   getCategories,
+   getServicesCount
 };
 
 const instance = axios.create({
@@ -20,4 +23,16 @@ function getServices() {
 
 function getServicesByUid(uid) {
    return instance.get(`/services/${uid}`);
+}
+
+function getServiceIssues(uid) {
+   return instance.get(`/issues/service/${uid}`);
+}
+
+function getCategories() {
+   return instance.get('/categories');
+}
+
+function getServicesCount() {
+   return instance.get('/services/count');
 }

@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import CompareIcon from '@mui/icons-material/Compare';
 import {
    Card,
+   CircularProgress,
    Fab,
    LinearProgress,
    Paper,
@@ -16,22 +17,24 @@ import {
    TableRow
 } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { api } from '../api/apiService';
+import Box from '@mui/material/Box';
 
 export default function Services() {
-   const [rows, setRows] = useState([]);
    const [isLoading, setLoading] = useState(false);
    const [error, setError] = useState(null);
+   const [count, setCount] = useState(0);
 
    useEffect(() => {
+      document.title = 'Public Services';
       setLoading(true);
-      const fetch = async () => {
+      const fetchCount = async () => {
          try {
-            const response = await api.getServices();
-            setRows(response.data.services);
+            const res = await api.getServicesCount();
+            setCount(res.data);
          } catch (e) {
             console.error(`Error occurred: ${e}`);
             setError('Error fetching data. Please, try again later!');
@@ -39,34 +42,64 @@ export default function Services() {
             setLoading(false);
          }
       };
-      document.title = 'Public Services';
-      fetch();
+      fetchCount();
    }, []);
 
    if (error) {
       return <Typography>{error}</Typography>;
    }
 
-   return (
+   return isLoading ? (
+      <Box
+         sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            my: 25
+         }}
+      >
+         <CircularProgress />
+      </Box>
+   ) : (
       <>
          <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
-            Public services ({rows.length})
+            Public services ({count['count']})
          </Typography>
          <Divider />
          <Container disableGutters sx={{ mt: 4, mb: 4 }}>
-            {isLoading ? <LinearProgress /> : <ServicesTable rows={rows} />}
+            <ServicesTable />
          </Container>
       </>
    );
 }
 
-const ServicesTable = (props) => {
+const ServicesTable = () => {
+   const [rows, setRows] = useState([]);
+   const [isLoading, setLoading] = useState(false);
+   const [error, setError] = useState(null);
    const [page, setPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(10);
+   const rowsPerPage = 10;
    const cellAlign = 'left';
-   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.length) : 0;
-   const [checked, setChecked] = useState(new Array(props.rows.length).fill(false));
+   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+   const [checked, setChecked] = useState(new Array(rows.length).fill(false));
    const navigate = useNavigate();
+
+   useEffect(() => {
+      setLoading(true);
+      const fetch = async () => {
+         try {
+            const response = await api.getServices();
+            if (response.data.services.length > 0) {
+               setRows(response.data.services);
+            }
+         } catch (e) {
+            console.error(`Error occurred: ${e}`);
+            setError('Error fetching data. Please, try again later!');
+         } finally {
+            setLoading(false);
+         }
+      };
+      fetch();
+   }, [page]);
 
    const StyledLink = styled(Link)`
       text-decoration: none;
@@ -97,21 +130,20 @@ const ServicesTable = (props) => {
       setPage(newPage);
    };
 
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   };
+   if (error) {
+      return <Typography>{error}</Typography>;
+   }
 
-   const visibleRows = useMemo(() => props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [page, rowsPerPage]);
-
-   return (
+   return isLoading ? (
+      <LinearProgress />
+   ) : (
       <>
          <Card>
             <TableContainer component={Paper}>
                <Table>
                   <ServicesTableHead />
                   <TableBody>
-                     {visibleRows.map((row, index) => (
+                     {rows.map((row, index) => (
                         <TableRow key={row.uid}>
                            <TableCell align={cellAlign}>
                               <StyledLink to={'../services/' + row.uid}>{row.name ?? 'null'}</StyledLink>
@@ -140,13 +172,12 @@ const ServicesTable = (props) => {
                   </TableBody>
                </Table>
                <TablePagination
-                  count={props.rows.length}
+                  count={rows.length}
                   component='div'
                   page={page}
                   rowsPerPage={rowsPerPage}
-                  rowsPerPageOptions={[10, 20, 50]}
+                  rowsPerPageOptions={[]}
                   onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
                />
             </TableContainer>
          </Card>
@@ -182,7 +213,7 @@ const ServicesTableHead = () => {
                <Typography fontWeight='bold'>Phone</Typography>
             </TableCell>
             <TableCell align='left'>
-               <Typography fontWeight='bold'>Location</Typography>
+               <Typography fontWeight='bold'>Address</Typography>
             </TableCell>
             <TableCell align='left'>
                <Typography fontWeight='bold'>Reserved/Resolved</Typography>
