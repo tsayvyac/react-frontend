@@ -38,7 +38,7 @@ export default function Login() {
          })
          .then((token) => {
             Cookies.set('token', token);
-            navigate('/main');
+            navigate('/main/dashboard');
          })
          .catch(() => {
             setError('Incorrect email or password');

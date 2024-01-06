@@ -2,7 +2,12 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 export const api = {
-   getServices
+   getServices,
+   getServicesByUid,
+   getServiceIssues,
+   getCategories,
+   getServicesCount,
+   getServiceAllIssues
 };
 
 const instance = axios.create({
@@ -13,11 +18,26 @@ const instance = axios.create({
    }
 });
 
-instance.interceptors.request.use(config => {
-   config.headers.Authorization = `Bearer ${accessToken}`;
-   return config;
-})
+function getServices(page) {
+   return instance.get(`/services?page=${page}`);
+}
 
-function getServices() {
-   return instance.get('/services');
+function getServicesByUid(uid) {
+   return instance.get(`/services/${uid}`);
+}
+
+function getServiceIssues(uid, status, order_by) {
+   return instance.get(`/issues/service/${uid}?statuses=${status}&order-by=${order_by}`);
+}
+
+function getServiceAllIssues(uid, order_by) {
+   return instance.get(`/issues/service/${uid}?order-by=${order_by}`);
+}
+
+function getCategories() {
+   return instance.get('/categories');
+}
+
+function getServicesCount() {
+   return instance.get('/services/count');
 }
