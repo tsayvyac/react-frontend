@@ -25,7 +25,7 @@ module.exports = {
    ],
    rules: {
       'no-unused-vars': ['error', { vars: 'all', args: 'after-used', ignoreRestSiblings: false }],
-      'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }, { usePrettierrc: true }],
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off'

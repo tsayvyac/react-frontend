@@ -4,45 +4,87 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
-import { useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { api } from '../api/apiIssues';
+import axios from 'axios';
 
 export default function IssuePage() {
    const theme = useTheme();
+   const { index } = useParams();
+   const [issueDetails, setIssueDetails] = useState({});
 
-   const issue_obj = useLocation();
-   // if (!issue) {
-   //     return <div>Content not found</div>;
-   // }
-   const { address, title, status, date } = issue_obj.state;
+   useEffect(() => {
+      const fetchIssueDetails = async () => {
+         try {
+            const response = await api.getIssuesByUid(index);
+            response.data.photo = URL.createObjectURL((await api.getPhoto(response.data.photo)).data);
+            setIssueDetails(response.data);
+         } catch (error) {
+            if (error.response) {
+               console.error('Response data:', error.response.data);
+            }
+         }
+      };
+      fetchIssueDetails();
+   }, [index]);
 
-   const imageUrl =
-      'https://cdnn1.img.sputnik-ossetia.ru/img/945/93/9459311_0:160:3073:1888_1920x0_80_0_0_93dcc8a2c735006de92bc583cc06a0cc.jpg';
-   const hoverImageUrl = 'https://cs13.pikabu.ru/post_img/big/2019/06/27/4/1561610943158893358.jpg';
+   const { coordinates, title, status, creationDate, photo, authorId, reservationDate, resolutionDate, description } = issueDetails;
+   const normalDate = new Date(creationDate);
+   const formattedDate = normalDate.toDateString();
+   const isResolved = status === 'RESOLVED';
 
-   const reservationDate = '2023-12-11';
-   const resolutionDate = '2023-12-19';
-   const description =
-      'The bim bim bam bam was broken, had to fix the bim bim bam bam. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer rutrum, orci vestibulum ullamcorper ultricies, lacus quam ultricies odio, vitae placerat pede sem sit amet enim. Mauris suscipit, ligula sit amet pharetra semper, nibh ante cursus purus, vel sagittis velit mauris vel metus. Quisque porta. Aenean fermentum risus id tortor. Sed convallis magna eu sem.';
+   const getStatusDisplay = () => {
+      if (isResolved) {
+         return `Resolved: ${resolutionDate}`;
+      } else {
+         return status;
+      }
+   };
+
+   const getResolutionDisplay = () => {
+      if (isResolved) {
+         return `Resolved by ${authorId}`;
+      } else if (status === 'Solving') {
+         return `Currently being solved by ${authorId}`;
+      } else {
+         return `Reserved: ${reservationDate}`;
+      }
+   };
+
+   const [normalizedAddress, setNormalizedAddress] = useState('');
+
+   useEffect(() => {
+      const fetchNormalizedAddress = async () => {
+         try {
+            const response = await axios.get(
+               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.latitude},${coordinates.longitude}&key=AIzaSyAYoqbho901MdEF6kk4rJJ8YxjVLzPR4Sw`
+            );
+            const address = response.data.results[0].formatted_address;
+            setNormalizedAddress(address);
+         } catch (error) {
+            console.error('Error fetching normalized address:', error);
+         }
+      };
+
+      if (coordinates && coordinates.latitude && coordinates.longitude) {
+         fetchNormalizedAddress();
+      }
+   }, [coordinates]);
 
    return (
       <>
          <Stack sx={{ width: '100%' }} direction='column' spacing={2}>
             <Box>
                <Typography component='h1' variant='h4'>
-                  {title} - {status}
+                  {title} - {getStatusDisplay()}
                </Typography>
                <Divider />
             </Box>
             <Grid container spacing={3}>
                <Grid item xs={12} md={6}>
-                  <img
-                     src={imageUrl}
-                     alt='Issue Photo'
-                     style={{ width: '100%', height: 'auto' }}
-                     onMouseOver={(e) => (e.currentTarget.src = hoverImageUrl)}
-                     onMouseOut={(e) => (e.currentTarget.src = imageUrl)}
-                  />
+                  <img src={photo} alt='Issue Photo' style={{ width: '100%', height: 'auto' }} />
                   <Typography variant='subtitle2' color={theme.palette.text.secondary}></Typography>
                </Grid>
                <Grid item xs={12} md={6}>
@@ -58,20 +100,16 @@ export default function IssuePage() {
                               Information
                            </Typography>
                            <Typography fontSize='20px' marginBottom={'10px'} color={theme.palette.text.secondary}>
-                              Resolved within 3d 14h by Rechair.
+                              {status === 'PUBLISHED' && `Published on ${formattedDate}`}
+                              {status === 'SOLVING' && `Is now solving by ${authorId}`}
+                              {status === 'RESERVED' && `Reserved by ${authorId}`}
+                              {status === 'SOLVED' && `Solved by ${authorId}`}
                            </Typography>
                            <Typography variant='subtitle1' color={theme.palette.text.secondary} fontSize='17px'>
-                              Address: {address}
+                              Address: {normalizedAddress || 'Loading address...'}
                            </Typography>
-                           <Typography
-                              variant='subtitle2'
-                              color={theme.palette.text.secondary}
-                              fontSize='17px'
-                              // sx={{
-                              //     mb: 3
-                              // }}
-                           >
-                              Published on: {date}
+                           <Typography variant='subtitle2' color={theme.palette.text.secondary} fontSize='17px'>
+                              Published on: {formattedDate}
                            </Typography>
                            {reservationDate && (
                               <Typography variant='subtitle2' color={theme.palette.text.secondary} fontSize='17px'>
@@ -87,11 +125,9 @@ export default function IssuePage() {
             <Grid>
                <Container component={Paper} sx={{ p: 2 }}>
                   <Box>
-                     {resolutionDate && (
-                        <Typography variant='subtitle2' color={theme.palette.primary.main} fontSize='17px'>
-                           Resolved: {resolutionDate}
-                        </Typography>
-                     )}
+                     <Typography variant='subtitle2' color={theme.palette.primary.main} fontSize='17px'>
+                        {getResolutionDisplay()}
+                     </Typography>
                      <Typography variant='subtitle1' fontWeight='bold' fontSize='25px'>
                         Description:
                      </Typography>
