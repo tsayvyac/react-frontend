@@ -6,7 +6,8 @@ export const api = {
    getServicesByUid,
    getServiceIssues,
    getCategories,
-   getServicesCount
+   getServicesCount,
+   getServiceAllIssues
 };
 
 const instance = axios.create({
@@ -17,16 +18,20 @@ const instance = axios.create({
    }
 });
 
-function getServices() {
-   return instance.get('/services');
+function getServices(page) {
+   return instance.get(`/services?page=${page}`);
 }
 
 function getServicesByUid(uid) {
    return instance.get(`/services/${uid}`);
 }
 
-function getServiceIssues(uid) {
-   return instance.get(`/issues/service/${uid}`);
+function getServiceIssues(uid, status, order_by) {
+   return instance.get(`/issues/service/${uid}?statuses=${status}&order-by=${order_by}`);
+}
+
+function getServiceAllIssues(uid, order_by) {
+   return instance.get(`/issues/service/${uid}?order-by=${order_by}`);
 }
 
 function getCategories() {

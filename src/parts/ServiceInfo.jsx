@@ -14,6 +14,7 @@ import {
    DialogActions,
    DialogTitle,
    FormControl,
+   InputLabel,
    LinearProgress,
    MenuItem,
    Paper,
@@ -31,8 +32,6 @@ import {
 import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import { deepPurple } from '@mui/material/colors';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { api } from '../api/apiService';
 import { format } from 'date-fns';
 
@@ -186,10 +185,11 @@ const IssuesTableHead = () => {
 };
 
 const IssuesToolbar = (props) => {
-   const [status, setStatus] = useState('');
    const handleChange = (event) => {
-      setStatus(event.target.value);
       props.setFilter({ ...props.filter, status: event.target.value });
+   };
+   const handleOrderBy = (event) => {
+      props.setFilter({ ...props.filter, order_by: event.target.value });
    };
    const [openDialog, setOpenDialog] = useState(false);
    const handleOpenDialog = () => {
@@ -214,37 +214,51 @@ const IssuesToolbar = (props) => {
             <Stack direction='row'>
                <Box
                   sx={{
-                     width: 120,
+                     width: 150,
                      mr: 2
                   }}
                >
                   <FormControl fullWidth>
-                     <Select value={status} onChange={handleChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
-                        <MenuItem value=''>All</MenuItem>
+                     <InputLabel id='status'>Status</InputLabel>
+                     <Select
+                        value={props.filter.status}
+                        onChange={handleChange}
+                        displayEmpty
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        label='Status'
+                        labelId='status'
+                     >
+                        <MenuItem value='All'>All</MenuItem>
                         <MenuItem value='SOLVED'>SOLVED</MenuItem>
                         <MenuItem value='SOLVING'>SOLVING</MenuItem>
+                        <MenuItem value='DELETED'>DELETED</MenuItem>
+                        <MenuItem value='PUBLISHED'>PUBLISHED</MenuItem>
+                        <MenuItem value='MODERATION'>MODERATION</MenuItem>
                      </Select>
                   </FormControl>
                </Box>
                <Box
                   sx={{
-                     width: 170,
+                     width: 150,
                      mr: 2
                   }}
                >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                     <DatePicker label='From' />
-                  </LocalizationProvider>
-               </Box>
-               <Box
-                  sx={{
-                     width: 170,
-                     mr: 2
-                  }}
-               >
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                     <DatePicker label='To' />
-                  </LocalizationProvider>
+                  <FormControl fullWidth>
+                     <InputLabel id='order-by'>Order by</InputLabel>
+                     <Select
+                        value={props.filter.order_by}
+                        onChange={handleOrderBy}
+                        displayEmpty
+                        inputProps={{ 'aria-label': 'Without label' }}
+                        label='Order by'
+                        labelId='order-by'
+                     >
+                        <MenuItem value='STATUS'>STATUS</MenuItem>
+                        <MenuItem value='CREATION_DATE'>CREATION DATE</MenuItem>
+                        <MenuItem value='CATEGORY'>CATEGORY</MenuItem>
+                        <MenuItem value='LIKES'>LIKES</MenuItem>
+                     </Select>
+                  </FormControl>
                </Box>
             </Stack>
             <Box>
@@ -281,15 +295,19 @@ const IssuesTable = (props) => {
    const cellAlign = 'left';
    const [filter, setFilter] = useState({
       status: 'All',
-      dateFrom: '',
-      dateTo: ''
+      order_by: 'CREATION_DATE'
    });
 
    useEffect(() => {
       setLoading(true);
       const fetch = async () => {
          try {
-            const issuesRes = await api.getServiceIssues(props.serviceId);
+            let issuesRes;
+            if (filter.status === 'All') {
+               issuesRes = await api.getServiceAllIssues(props.serviceId, filter.order_by);
+            } else {
+               issuesRes = await api.getServiceIssues(props.serviceId, filter.status, filter.order_by);
+            }
             const categoriesRes = await api.getCategories();
             setCategories(categoriesRes.data);
             setIssues(issuesRes.data.issues);
@@ -301,9 +319,7 @@ const IssuesTable = (props) => {
          }
       };
       fetch();
-   }, [page]);
-
-   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filterData(issues, filter).length) : 0;
+   }, [page, filter]);
 
    const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -328,7 +344,7 @@ const IssuesTable = (props) => {
       <>
          <Card>
             <TableContainer component={Paper}>
-               <IssuesToolbar setFilter={setFilter} filter={filter} />
+               <IssuesToolbar setFilter={setFilter} filter={filter} categories={categories} />
                <Table>
                   <IssuesTableHead />
                   <TableBody>
@@ -356,15 +372,6 @@ const IssuesTable = (props) => {
                               </TableRow>
                            );
                         })}
-                     {emptyRows > 0 && (
-                        <TableRow
-                           style={{
-                              height: 53 * emptyRows
-                           }}
-                        >
-                           <TableCell colSpan={6} />
-                        </TableRow>
-                     )}
                   </TableBody>
                </Table>
                <TablePagination

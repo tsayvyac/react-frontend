@@ -79,17 +79,17 @@ const ServicesTable = () => {
    const [page, setPage] = useState(0);
    const rowsPerPage = 10;
    const cellAlign = 'left';
-   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-   const [checked, setChecked] = useState(new Array(rows.length).fill(false));
+   const [checked, setChecked] = useState([]);
    const navigate = useNavigate();
 
    useEffect(() => {
       setLoading(true);
       const fetch = async () => {
          try {
-            const response = await api.getServices();
+            const response = await api.getServices(page);
             if (response.data.services.length > 0) {
                setRows(response.data.services);
+               setChecked(new Array(response.data.services.length).fill(false));
             }
          } catch (e) {
             console.error(`Error occurred: ${e}`);
@@ -143,32 +143,25 @@ const ServicesTable = () => {
                <Table>
                   <ServicesTableHead />
                   <TableBody>
-                     {rows.map((row, index) => (
-                        <TableRow key={row.uid}>
-                           <TableCell align={cellAlign}>
-                              <StyledLink to={'../services/' + row.uid}>{row.name ?? 'null'}</StyledLink>
-                           </TableCell>
-                           <TableCell align={cellAlign}>{row.phoneNumber ?? 'null'}</TableCell>
-                           <TableCell align={cellAlign}>{row.address ?? 'null'}</TableCell>
-                           <TableCell align={cellAlign}>{row.rr ?? 'null / null'}</TableCell>
-                           <TableCell align='right' padding='checkbox'>
-                              <Checkbox
-                                 disabled={handleDisabled(index)}
-                                 checked={checked[index]}
-                                 onChange={(e) => handleCheckbox(index, e)}
-                              />
-                           </TableCell>
-                        </TableRow>
-                     ))}
-                     {emptyRows > 0 && (
-                        <TableRow
-                           style={{
-                              height: 53 * emptyRows
-                           }}
-                        >
-                           <TableCell colSpan={6} />
-                        </TableRow>
-                     )}
+                     {rows.map((row, index) => {
+                        return (
+                           <TableRow key={row.uid}>
+                              <TableCell align={cellAlign}>
+                                 <StyledLink to={'../services/' + row.uid}>{row.name ?? 'null'}</StyledLink>
+                              </TableCell>
+                              <TableCell align={cellAlign}>{row.phoneNumber ?? 'null'}</TableCell>
+                              <TableCell align={cellAlign}>{row.address ?? 'null'}</TableCell>
+                              {/*<TableCell align={cellAlign}>{row.rr ?? 'null / null'}</TableCell>*/}
+                              <TableCell align='right' padding='checkbox'>
+                                 <Checkbox
+                                    disabled={handleDisabled(index)}
+                                    checked={checked[index]}
+                                    onChange={(e) => handleCheckbox(index, e)}
+                                 />
+                              </TableCell>
+                           </TableRow>
+                        );
+                     })}
                   </TableBody>
                </Table>
                <TablePagination
@@ -214,9 +207,6 @@ const ServicesTableHead = () => {
             </TableCell>
             <TableCell align='left'>
                <Typography fontWeight='bold'>Address</Typography>
-            </TableCell>
-            <TableCell align='left'>
-               <Typography fontWeight='bold'>Reserved/Resolved</Typography>
             </TableCell>
             <TableCell align='left'>
                <Typography fontWeight='bold'>Compare</Typography>
