@@ -5,7 +5,8 @@ export const api = {
    getIssues,
    getIssuesByUid,
    getCategories,
-   getPhoto
+   getPhoto,
+   getAuthorByID
 };
 
 const instance = axios.create({
@@ -30,4 +31,8 @@ function getCategories() {
 
 function getPhoto(url) {
    return instance.get(url + '?alt=media', { responseType: 'blob' });
+}
+
+function getAuthorByID(uid) {
+   return instance.get(`/residents/${uid}`);
 }

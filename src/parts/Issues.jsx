@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
-import { Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs } from '@mui/material';
+import { LinearProgress, Tab, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { styled, useTheme } from '@mui/material/styles';
@@ -32,10 +32,11 @@ export default function Issues() {
    const [dummyData, setListIssues] = useState([]);
    const [categories, setCategories] = useState([]);
    const [normalizedAddresses, setNormalizedAddresses] = useState([]); // Add this line
-   // const [loading, setLoading] = useState(true); // Track loading state
+   const [isLoading, setLoading] = useState(true);
 
    useEffect(() => {
       document.title = 'Issues';
+      setLoading(true);
       const fetch = async () => {
          try {
             const response = await api.getIssues();
@@ -62,13 +63,16 @@ export default function Issues() {
                      return address;
                   } catch (error) {
                      console.error('Error fetching normalized address:', error);
-                     return 'AAA'; // Return an empty string on error
+                     return ' ';
+                  } finally {
+                     setLoading(false);
                   }
                })
             );
             setNormalizedAddresses(addresses);
          } catch (e) {
             console.error(`Error occurred: ${e}`);
+            return <Typography>{e}</Typography>;
          }
       };
       fetch();
@@ -87,7 +91,9 @@ export default function Issues() {
       setFilter({ ...filter, [event.target.name]: event.target.value });
    };
 
-   return (
+   return isLoading ? (
+      <LinearProgress />
+   ) : (
       <>
          <Typography component='h1' variant='h4' sx={{ fontWeight: 'bold' }}>
             Issues

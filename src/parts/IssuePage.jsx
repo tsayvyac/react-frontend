@@ -14,12 +14,15 @@ export default function IssuePage() {
    const theme = useTheme();
    const { index } = useParams();
    const [issueDetails, setIssueDetails] = useState({});
+   const [authorName, setAuthorName] = useState('');
 
    useEffect(() => {
       const fetchIssueDetails = async () => {
          try {
             const response = await api.getIssuesByUid(index);
             response.data.photo = URL.createObjectURL((await api.getPhoto(response.data.photo)).data);
+            const author = await api.getAuthorByID(response.data.authorUid);
+            setAuthorName(author.data.firstName + ' ' + author.data.lastName);
             setIssueDetails(response.data);
          } catch (error) {
             if (error.response) {
@@ -34,7 +37,6 @@ export default function IssuePage() {
    const normalDate = new Date(creationDate);
    const formattedDate = normalDate.toDateString();
    const isResolved = status === 'RESOLVED';
-
    const getStatusDisplay = () => {
       if (isResolved) {
          return `Resolved: ${resolutionDate}`;
@@ -49,7 +51,7 @@ export default function IssuePage() {
       } else if (status === 'Solving') {
          return `Currently being solved by ${authorId}`;
       } else {
-         return `Reserved: ${reservationDate}`;
+         return '';
       }
    };
 
@@ -100,10 +102,11 @@ export default function IssuePage() {
                               Information
                            </Typography>
                            <Typography fontSize='20px' marginBottom={'10px'} color={theme.palette.text.secondary}>
-                              {status === 'PUBLISHED' && `Published on ${formattedDate}`}
-                              {status === 'SOLVING' && `Is now solving by ${authorId}`}
-                              {status === 'RESERVED' && `Reserved by ${authorId}`}
-                              {status === 'SOLVED' && `Solved by ${authorId}`}
+                              Published by {authorName}
+                              {/*{status === 'PUBLISHED' && `Published on ${formattedDate}`}*/}
+                              {/*{status === 'SOLVING' && `Is now solving by ${authorId}`}*/}
+                              {/*{status === 'RESERVED' && `Reserved by ${authorId}`}*/}
+                              {/*{status === 'SOLVED' && `Solved by ${authorId}`}*/}
                            </Typography>
                            <Typography variant='subtitle1' color={theme.palette.text.secondary} fontSize='17px'>
                               Address: {normalizedAddress || 'Loading address...'}

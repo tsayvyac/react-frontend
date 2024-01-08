@@ -1,5 +1,5 @@
 import Divider from '@mui/material/Divider';
-import { Chip, lighten, Stack } from '@mui/material';
+import { Chip, lighten, LinearProgress, Stack } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
@@ -279,7 +279,9 @@ const PublicServicesCard = () => {
       }
    };
 
-   return (
+   return isLoading ? (
+      <LinearProgress />
+   ) : (
       <Box
          sx={{
             pt: 4,
